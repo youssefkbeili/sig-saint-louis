@@ -1,0 +1,14 @@
+{
+"type": "FeatureCollection",
+"name": "ecole-maternelle",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "ID": "1", "opérateur": null, "opération": null, "Adresse-vo": null, "Contact": "339626536", "Nom": "Diawling", "Commune": "SAINT-LOUIS" }, "geometry": { "type": "Point", "coordinates": [ -16.4904874, 16.0262806 ] } },
+{ "type": "Feature", "properties": { "ID": "2", "opérateur": "Privé", "opération": "Ouvert", "Adresse-vo": "Rue Blaise Didagne", "Contact": null, "Nom": "École Maternelle du Nord", "Commune": "SAINT-LOUIS" }, "geometry": { "type": "Point", "coordinates": [ -16.5035605, 16.0313518 ] } },
+{ "type": "Feature", "properties": { "ID": "3", "opérateur": null, "opération": null, "Adresse-vo": null, "Contact": null, "Nom": "Jardin d'enfants Bonnheur des enfants", "Commune": "SAINT-LOUIS" }, "geometry": { "type": "Point", "coordinates": [ -16.486109870161659, 16.027064564514166 ] } },
+{ "type": "Feature", "properties": { "ID": "4", "opérateur": null, "opération": null, "Adresse-vo": null, "Contact": null, "Nom": "Case des Tout-Petits de Khor, salle polyvalente", "Commune": "SAINT-LOUIS" }, "geometry": { "type": "Point", "coordinates": [ -16.4745837, 16.0256996 ] } },
+{ "type": "Feature", "properties": { "ID": "5", "opérateur": null, "opération": null, "Adresse-vo": null, "Contact": null, "Nom": "case des tous petits de Khor (en chantier)", "Commune": "SAINT-LOUIS" }, "geometry": { "type": "Point", "coordinates": [ -16.473558158998657, 16.025125111014059 ] } },
+{ "type": "Feature", "properties": { "ID": "6", "opérateur": null, "opération": null, "Adresse-vo": null, "Contact": null, "Nom": null, "Commune": "SAINT-LOUIS" }, "geometry": { "type": "Point", "coordinates": [ -16.4433869, 16.03965 ] } },
+{ "type": "Feature", "properties": { "ID": "7", "opérateur": null, "opération": null, "Adresse-vo": null, "Contact": null, "Nom": "École Maternelle goxu mbac", "Commune": "SAINT-LOUIS" }, "geometry": { "type": "Point", "coordinates": [ -16.507627690862936, 16.037980603945215 ] } }
+]
+}

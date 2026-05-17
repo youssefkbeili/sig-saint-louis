@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "etablissement--universitaire",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": 1, "Nom": "Université Gaston Berger", "Commune": "Gandon", "X": 347675.747, "Y": 1776449.25 }, "geometry": { "type": "Point", "coordinates": [ -16.424026751246977, 16.063192546896371 ] } }
+]
+}

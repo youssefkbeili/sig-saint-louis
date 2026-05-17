@@ -1,0 +1,9 @@
+{
+"type": "FeatureCollection",
+"name": "amphithéâtre",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "full_id": "1", "forme de t": "appartement", "nom": "Amphitheatre", "bâtiment ": "brick", "grand bât": "1", "petit bât": "bien", "bâtiment": "oui", "X": 347737.69, "Y": 1776400.311 }, "geometry": { "type": "Point", "coordinates": [ -16.42344465, 16.0627541 ] } },
+{ "type": "Feature", "properties": { "full_id": "2", "forme de t": null, "nom": "Amphitheatre", "bâtiment ": null, "grand bât": null, "petit bât": null, "bâtiment": "oui", "X": 347693.451, "Y": 1776369.5 }, "geometry": { "type": "Point", "coordinates": [ -16.42385615, 16.0624729 ] } }
+]
+}

@@ -1,0 +1,14 @@
+{
+"type": "FeatureCollection",
+"name": "mémorial",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "ID": "1", "historique": "mémorial", "Nom": "Monument aux morts", "Image": "https://photos.app.goo.gl/dyv4uMKPmteNCXv78", "X": 338647.374, "Y": 1772419.242, "Nom Commun": "SAINT-LOUIS" }, "geometry": { "type": "Point", "coordinates": [ -16.5081353, 16.0261946 ] } },
+{ "type": "Feature", "properties": { "ID": "2", "historique": "mémorial", "Nom": null, "Image": null, "X": 344458.272, "Y": 1776382.271, "Nom Commun": "SAINT-LOUIS" }, "geometry": { "type": "Point", "coordinates": [ -16.4540945, 16.0623851 ] } },
+{ "type": "Feature", "properties": { "ID": "3", "historique": "mémorial", "Nom": null, "Image": null, "X": 340604.85, "Y": 1771290.711, "Nom Commun": "SAINT-LOUIS" }, "geometry": { "type": "Point", "coordinates": [ -16.4897679, 16.0161235 ] } },
+{ "type": "Feature", "properties": { "ID": "4", "historique": "mémorial", "Nom": null, "Image": null, "X": 338993.794, "Y": 1773618.763, "Nom Commun": "SAINT-LOUIS" }, "geometry": { "type": "Point", "coordinates": [ -16.5049795, 16.0370577 ] } },
+{ "type": "Feature", "properties": { "ID": "5", "historique": "mémorial", "Nom": "La Grue à vapeur de vingt tonnes", "Image": "https://photos.app.goo.gl/9hmMTctsYnkwrbhN6", "X": 339266.101, "Y": 1773384.129, "Nom Commun": "SAINT-LOUIS" }, "geometry": { "type": "Point", "coordinates": [ -16.5024189, 16.0349551 ] } },
+{ "type": "Feature", "properties": { "ID": "6", "historique": "mémorial", "Nom": "Pacôme", "Image": null, "X": 339156.363, "Y": 1772777.351, "Nom Commun": "SAINT-LOUIS" }, "geometry": { "type": "Point", "coordinates": [ -16.5034033, 16.0294643 ] } },
+{ "type": "Feature", "properties": { "ID": "7", "historique": "mémorial", "Nom": null, "Image": null, "X": 338812.343, "Y": 1774407.916, "Nom Commun": "SAINT-LOUIS" }, "geometry": { "type": "Point", "coordinates": [ -16.506728762356072, 16.044177552056986 ] } }
+]
+}

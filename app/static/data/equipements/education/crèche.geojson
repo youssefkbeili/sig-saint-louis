@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "crèche",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "full_id": "1", "nom_fr": "Au bonheur des enfants", "nom": "Au bonheur des enfants", "adresse": "cité SAED", "x": 346576.613, "Y": 1775019.259 }, "geometry": { "type": "Point", "coordinates": [ -16.4342073, 16.0502004 ] } }
+]
+}

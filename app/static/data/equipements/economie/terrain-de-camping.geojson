@@ -1,0 +1,9 @@
+{
+"type": "FeatureCollection",
+"name": "terrain-de-camping",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "full_id": "1", "tourisme": "camp_site", "toilettes": "Oui", "tentes": "Oui", "douche": "Oui", "sanitaires": "Oui", "alimentati": "Oui", "nom": "Zebrabar", "accès Int": "wlan", "frais": "Oui", "eau potabl": "Oui", "caravanes": "Oui", "X": 338071.505, "Y": 1754509.677 }, "geometry": { "type": "Point", "coordinates": [ -16.5123027, 15.8643028 ] } },
+{ "type": "Feature", "properties": { "full_id": "2", "tourisme": "camp_site", "toilettes": null, "tentes": null, "douche": null, "sanitaires": null, "alimentati": null, "nom": "7Palava", "accès Int": null, "frais": null, "eau potabl": null, "caravanes": null, "X": 338708.306, "Y": 1759655.619 }, "geometry": { "type": "Point", "coordinates": [ -16.506702853239034, 15.910849997474065 ] } }
+]
+}

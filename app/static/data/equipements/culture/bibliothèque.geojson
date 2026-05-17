@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "bibliothèque",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": 1, "Nom": "Bibliothèque", "Commune": "SAINT-LOUIS", "X": 339170.023, "Y": 1773187.238 }, "geometry": { "type": "Point", "coordinates": [ -16.503303408677901, 16.033169447815986 ] } }
+]
+}

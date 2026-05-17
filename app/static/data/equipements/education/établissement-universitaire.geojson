@@ -1,0 +1,10 @@
+{
+"type": "FeatureCollection",
+"name": "établissement-universitaire",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": 1, "Nom": "Université Kocc Barma", "Commune": "SAINT-LOUIS", "X": 340948.854, "Y": 1772021.799 }, "geometry": { "type": "Point", "coordinates": [ -16.486602411413298, 16.022752871965604 ] } },
+{ "type": "Feature", "properties": { "id": 2, "Nom": "UVS Saint-Louis", "Commune": "SAINT-LOUIS", "X": 340910.409, "Y": 1771415.621 }, "geometry": { "type": "Point", "coordinates": [ -16.486921083990381, 16.017272148563698 ] } },
+{ "type": "Feature", "properties": { "id": 3, "Nom": "ENO SAINT LOUIS", "Commune": "SAINT-LOUIS", "X": 340737.127, "Y": 1771522.564 }, "geometry": { "type": "Point", "coordinates": [ -16.488547424177227, 16.01822741036381 ] } }
+]
+}

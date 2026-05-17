@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "hôpital-régional-de-saint-louis",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": 1, "Nom": "Hôpital Régional de Saint-Louis\n", "Commune": "SAINT-LOUIS", "X": 338876.322, "Y": 1772046.717 }, "geometry": { "type": "Point", "coordinates": [ -16.505970624418726, 16.022843023257806 ] } }
+]
+}

@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-12">
+    <nav class="text-sm text-gray-400 mb-6">
+        <a href="/" class="hover:text-primary-600">Accueil</a> <span class="mx-2">›</span>
+        <span class="text-gray-700">{{ page_title }}</span>
+    </nav>
+
+    <h1 class="text-3xl font-bold mb-4">{{ page_title }}</h1>
+
+    <!-- Commune tabs -->
+    <div class="flex gap-2 mb-8 flex-wrap">
+        {% for slug, info in communes.items() %}
+        <a href="/equipements/{{ slug }}"
+           class="px-4 py-2 rounded-lg font-semibold text-sm transition
+                  {{ 'bg-primary-700 text-white' if slug == commune else 'bg-gray-200 text-gray-700 hover:bg-gray-300' }}">
+            {{ info.name }}
+        </a>
+        {% endfor %}
+    </div>
+
+    <!-- Sector cards -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+        {% for sector, data in sectors_data.items() %}
+        <div class="bg-white rounded-xl shadow-md p-6 border-l-4" style="border-left-color: {{ data.info.color }}">
+            <div class="flex items-center gap-3 mb-3">
+                <span class="text-3xl">{{ data.info.icon }}</span>
+                <div>
+                    <h3 class="font-bold text-lg">{{ data.info.label }}</h3>
+                    <p class="text-sm text-gray-500">{{ data.count }} équipement{{ 's' if data.count != 1 }} recensé{{ 's' if data.count != 1 }}</p>
+                </div>
+            </div>
+            {% if data.files %}
+            <ul class="text-sm text-gray-600 space-y-1">
+                {% for f in data.files %}
+                <li>• {{ f | replace('-', ' ') | replace('_', ' ') | title }}</li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-sm text-gray-400 italic">Données en cours de conversion</p>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Map -->
+    <div id="equip-map" class="w-full h-[500px] rounded-xl shadow-lg border"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const map = L.map('equip-map').setView([16.02, -16.48], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
+    L.control.scale({ imperial: false }).addTo(map);
+
+    const sectorColors = {{ sector_labels | tojson }};
+    const sectorsData = {{ sectors_data | tojson }};
+
+    for (const [sector, data] of Object.entries(sectorsData)) {
+        if (data.files.length === 0) continue;
+        data.files.forEach(fileName => {
+            fetch(`/static/data/equipements/${sector}/${fileName}.geojson`)
+                .then(r => r.ok ? r.json() : null)
+                .then(geojson => {
+                    if (geojson) {
+                        L.geoJSON(geojson, {
+                            pointToLayer: (f, latlng) => L.circleMarker(latlng, {
+                                radius: 7, fillColor: data.info.color, color: '#fff', weight: 2, fillOpacity: 0.9
+                            }),
+                            onEachFeature: (f, l) => {
+                                const p = f.properties || {};
+                                let html = `<strong>${data.info.icon} ${data.info.label}</strong><br>`;
+                                for (const [k, v] of Object.entries(p)) {
+                                    if (v && !['FID','OBJECTID','Shape_Leng','Shape_Area'].includes(k)) {
+                                        html += `<strong>${k}:</strong> ${v}<br>`;
+                                    }
+                                }
+                                l.bindPopup(`<div class="text-sm">${html}</div>`);
+                            }
+                        }).addTo(map);
+                    }
+                }).catch(() => {});
+        });
+    }
+</script>
+{% endblock %}

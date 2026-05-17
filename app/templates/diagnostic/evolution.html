@@ -1,0 +1,29 @@
+{% extends "diagnostic/base_theme.html" %}
+{% block description %}
+<div class="prose">
+    <p class="text-gray-600 leading-relaxed">
+        Entre 2017 et 2024, l'agglomération de Saint-Louis a connu une
+        croissance urbaine significative. Trois empreintes urbaines (2017, 2020, 2024)
+        permettent de visualiser cette expansion et de la comparer aux
+        lotissements planifiés.
+    </p>
+</div>
+{% endblock %}
+
+{% block map_layers %}
+const colors = { 2017: '#8B4513', 2020: '#e67e22', 2024: '#e91e63' };
+const years = [2017, 2020, 2024];
+
+years.forEach(year => {
+    fetch(`/static/data/evolution/empreinte-${year}.geojson`)
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+            if (data) {
+                L.geoJSON(data, {
+                    style: { color: colors[year], weight: 1, fillColor: colors[year], fillOpacity: 0.3 },
+                    onEachFeature: (f, l) => l.bindPopup(`Empreinte urbaine ${year}`)
+                }).addTo(map);
+            }
+        }).catch(() => {});
+});
+{% endblock %}

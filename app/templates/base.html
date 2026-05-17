@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ page_title | default('') }}{% endblock %} — SIG Saint-Louis</title>
+    <meta name="description" content="Diagnostic territorial de l'agglomération de Saint-Louis du Sénégal — Programme SEREP">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { 50:'#eff6ff',100:'#dbeafe',200:'#bfdbfe',300:'#93c5fd',400:'#60a5fa',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a5f' },
+                        accent:  { 100:'#fef3c7',500:'#f59e0b',600:'#d97706' },
+                        danger:  { 500:'#ef4444',600:'#dc2626' },
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+
+    {% block head_extra %}{% endblock %}
+</head>
+<body class="min-h-screen flex flex-col bg-gray-50 text-gray-800">
+
+    <!-- Navigation — 5 links, no dropdowns -->
+    <nav class="bg-primary-900 text-white shadow-lg sticky top-0 z-[1000]">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <a href="/" class="flex items-center gap-2 font-bold text-lg hover:text-primary-200 transition">
+                    <svg class="w-7 h-7 text-accent-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"/></svg>
+                    <span class="hidden sm:inline">SIG Saint-Louis</span>
+                </a>
+
+                <!-- Desktop menu -->
+                <div class="hidden md:flex items-center gap-2">
+                    <a href="/" class="nav-link" data-path="/">Accueil</a>
+                    <a href="/projet" class="nav-link" data-path="/projet">Le projet</a>
+                    <a href="/diagnostic" class="nav-link" data-path="/diagnostic">Diagnostic</a>
+                    <a href="/carte/" class="nav-link bg-accent-500 !text-white rounded-md hover:!bg-accent-600 flex items-center gap-1" data-path="/carte">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"/></svg>
+                        Carte
+                    </a>
+                    <a href="/ressources" class="nav-link" data-path="/ressources">Ressources</a>
+                </div>
+
+                <!-- Mobile hamburger -->
+                <button id="mobile-menu-btn" class="md:hidden p-2 rounded hover:bg-primary-800" aria-label="Ouvrir le menu">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="md:hidden hidden bg-primary-800 pb-4 px-4">
+            <a href="/" class="mobile-link" data-path="/">Accueil</a>
+            <a href="/projet" class="mobile-link" data-path="/projet">Le projet</a>
+            <a href="/diagnostic" class="mobile-link" data-path="/diagnostic">Diagnostic</a>
+            <a href="/carte/" class="mobile-link" data-path="/carte" style="color:#f59e0b;font-weight:700">Carte interactive</a>
+            <a href="/ressources" class="mobile-link" data-path="/ressources">Ressources</a>
+        </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="flex-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-primary-900 text-white mt-auto">
+        <div class="max-w-7xl mx-auto px-4 py-8">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="font-bold text-lg mb-3">SIG Saint-Louis</h3>
+                    <p class="text-primary-200 text-sm">Diagnostic territorial de l'agglomération de Saint-Louis du Sénégal</p>
+                    <p class="text-primary-300 text-xs mt-2">Programme SEREP — Plans Intercommunaux d'Urbanisme</p>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg mb-3">Partenaires</h3>
+                    <div class="flex items-center gap-4 mb-3">
+                        <img src="/static/img/logos/adm.png" alt="ADM" class="h-10 bg-white rounded p-1">
+                        <img src="/static/img/logos/comete.png" alt="COMETE" class="h-10 bg-white rounded p-1">
+                        <img src="/static/img/logos/senegal.jpg" alt="Sénégal" class="h-10 bg-white rounded p-1">
+                    </div>
+                    <p class="text-primary-200 text-sm">ADM — Agence de Développement Municipal</p>
+                    <p class="text-primary-200 text-sm">COMETE — Bureau d'études</p>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg mb-3">Navigation</h3>
+                    <a href="/diagnostic" class="block text-primary-200 text-sm hover:text-white">Diagnostic territorial</a>
+                    <a href="/carte/" class="block text-primary-200 text-sm hover:text-white">Carte interactive</a>
+                    <a href="/ressources" class="block text-primary-200 text-sm hover:text-white">Ressources & contact</a>
+                </div>
+            </div>
+            <div class="border-t border-primary-700 mt-6 pt-4 text-center text-primary-300 text-xs">
+                &copy; 2026 Programme SEREP — Plans Intercommunaux d'Urbanisme
+            </div>
+        </div>
+    </footer>
+
+    <!-- Lightbox / Modal plein écran pour les images -->
+    <div id="lightbox-modal" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-black/80 backdrop-blur-sm cursor-pointer" onclick="closeLightbox()">
+        <button onclick="closeLightbox()" class="absolute top-4 right-4 text-white bg-black/50 hover:bg-black/80 rounded-full w-10 h-10 flex items-center justify-center text-2xl transition z-10" title="Fermer">&times;</button>
+        <img id="lightbox-img" src="" alt="" class="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl cursor-default" onclick="event.stopPropagation()">
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Mobile menu toggle + Lightbox -->
+    <script>
+        document.getElementById('mobile-menu-btn')?.addEventListener('click', () => {
+            document.getElementById('mobile-menu')?.classList.toggle('hidden');
+        });
+
+        // Lightbox
+        function openLightbox(src, alt) {
+            const modal = document.getElementById('lightbox-modal');
+            const img = document.getElementById('lightbox-img');
+            img.src = src;
+            img.alt = alt || '';
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeLightbox() {
+            const modal = document.getElementById('lightbox-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.style.overflow = '';
+        }
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeLightbox();
+        });
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('lightbox-img')) {
+                openLightbox(e.target.src, e.target.alt);
+            }
+        });
+
+        // ── Frontend logging ──
+        const FLog = {
+            _send(level, message) {
+                fetch('/api/log', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ level, message, page: location.pathname + location.search })
+                }).catch(() => {});
+            },
+            info(msg)  { console.log(msg);   this._send('info', msg); },
+            warn(msg)  { console.warn(msg);  this._send('warning', msg); },
+            error(msg) { console.error(msg); this._send('error', msg); },
+        };
+
+        // Highlight active nav link
+        (function() {
+            const path = location.pathname.replace(/\/+$/, '') || '/';
+            document.querySelectorAll('[data-path]').forEach(a => {
+                const dp = a.dataset.path;
+                if (dp === '/' ? path === '/' : path.startsWith(dp)) {
+                    a.classList.add('active');
+                }
+            });
+        })();
+
+        // Log page load
+        FLog.info('Page loaded: ' + document.title);
+
+        // Log JS errors
+        window.addEventListener('error', (e) => {
+            FLog.error('JS Error: ' + e.message + ' at ' + (e.filename || '') + ':' + (e.lineno || ''));
+        });
+
+        // Log unhandled promise rejections
+        window.addEventListener('unhandledrejection', (e) => {
+            FLog.error('Unhandled rejection: ' + (e.reason?.message || e.reason || 'unknown'));
+        });
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

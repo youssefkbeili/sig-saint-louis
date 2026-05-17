@@ -1,0 +1,15 @@
+{
+"type": "FeatureCollection",
+"name": "établissement-de-formation-professionnelle",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": 1, "Nom": "Centre de Formation Professionnelle de Saint-Louis", "Commune": "SAINT-LOUIS", "X": 340532.026, "Y": 1771746.82 }, "geometry": { "type": "Point", "coordinates": [ -16.490408582226284, 16.020332435567958 ] } },
+{ "type": "Feature", "properties": { "id": 2, "Nom": "Centre d'initiation et de perfectionnement des métiers de l'agriculture (CIPA)", "Commune": "SAINT-LOUIS", "X": 340859.045, "Y": 1771518.576 }, "geometry": { "type": "Point", "coordinates": [ -16.48740792989042, 16.018199270324644 ] } },
+{ "type": "Feature", "properties": { "id": 3, "Nom": "Institut français du Sénégal - Saint-Louis", "Commune": "SAINT-LOUIS", "X": 339145.546, "Y": 1773178.895 }, "geometry": { "type": "Point", "coordinates": [ -16.503531577342294, 16.033092449581002 ] } },
+{ "type": "Feature", "properties": { "id": 4, "Nom": "CRFPE Saint-Louis", "Commune": "SAINT-LOUIS", "X": 338659.348, "Y": 1773763.35 }, "geometry": { "type": "Point", "coordinates": [ -16.508114729211332, 16.038342402242545 ] } },
+{ "type": "Feature", "properties": { "id": 5, "Nom": "Inspection de l'éducation et de la formation de Saint-Louis", "Commune": "SAINT-LOUIS", "X": 339176.972, "Y": 1773399.014 }, "geometry": { "type": "Point", "coordinates": [ -16.503252811668933, 16.035083774665832 ] } },
+{ "type": "Feature", "properties": { "id": 6, "Nom": "Centre de Formations et Insertion Diapalante", "Commune": "SAINT-LOUIS", "X": 338879.375, "Y": 1772666.268 }, "geometry": { "type": "Point", "coordinates": [ -16.505984114145324, 16.02844226008602 ] } },
+{ "type": "Feature", "properties": { "id": 7, "Nom": "Espace Préscolaire d’Excellence de Saint-Louis", "Commune": "SAINT-LOUIS", "X": 338979.438, "Y": 1772557.504 }, "geometry": { "type": "Point", "coordinates": [ -16.505041692364461, 16.027465894607609 ] } },
+{ "type": "Feature", "properties": { "id": 8, "Nom": "ESup Santé (École supérieure De Formation En santé)", "Commune": "SAINT-LOUIS", "X": 340817.597, "Y": 1771882.334 }, "geometry": { "type": "Point", "coordinates": [ -16.487819592915933, 16.021483982200223 ] } }
+]
+}

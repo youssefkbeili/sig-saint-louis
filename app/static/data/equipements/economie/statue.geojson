@@ -1,0 +1,15 @@
+{
+"type": "FeatureCollection",
+"name": "statue",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "ID": "1", "Type d'œu": null, "Date de la": "2013-02-03", "Nom": "Atelier D'art les Beaux Textiles des peuples du Sénégal Traditions et Créations", "X": 339046.595, "Y": 1772798.916, "Nom Commun": "SAINT-LOUIS" }, "geometry": { "type": "Point", "coordinates": [ -16.5044305, 16.029652 ] } },
+{ "type": "Feature", "properties": { "ID": "2", "Type d'œu": null, "Date de la": "2013-02-03", "Nom": "Touba Gouye Mbinde", "X": 339137.031, "Y": 1772962.713, "Nom Commun": "SAINT-LOUIS" }, "geometry": { "type": "Point", "coordinates": [ -16.5035965, 16.0311382 ] } },
+{ "type": "Feature", "properties": { "ID": "3", "Type d'œu": "libasse service", "Date de la": null, "Nom": null, "X": 340205.053, "Y": 1772573.456, "Nom Commun": "SAINT-LOUIS" }, "geometry": { "type": "Point", "coordinates": [ -16.4935899, 16.0276901 ] } },
+{ "type": "Feature", "properties": { "ID": "4", "Type d'œu": null, "Date de la": null, "Nom": "Pintade", "X": 338922.134, "Y": 1771846.83, "Nom Commun": "SAINT-LOUIS" }, "geometry": { "type": "Point", "coordinates": [ -16.505529, 16.0210396 ] } },
+{ "type": "Feature", "properties": { "ID": "5", "Type d'œu": null, "Date de la": null, "Nom": "Fall Meissa", "X": 339034.92, "Y": 1771941.473, "Nom Commun": "SAINT-LOUIS" }, "geometry": { "type": "Point", "coordinates": [ -16.5044815, 16.0219023 ] } },
+{ "type": "Feature", "properties": { "ID": "6", "Type d'œu": null, "Date de la": null, "Nom": "Kër Repentigny", "X": 339034.942, "Y": 1771873.532, "Nom Commun": "SAINT-LOUIS" }, "geometry": { "type": "Point", "coordinates": [ -16.5044767, 16.0212883 ] } },
+{ "type": "Feature", "properties": { "ID": "7", "Type d'œu": null, "Date de la": null, "Nom": "Les comptoirs", "X": 339029.993, "Y": 1771828.609, "Nom Commun": "SAINT-LOUIS" }, "geometry": { "type": "Point", "coordinates": [ -16.5045199, 16.020882 ] } },
+{ "type": "Feature", "properties": { "ID": "8", "Type d'œu": null, "Date de la": null, "Nom": "Kër Hamet Gora", "X": 338995.779, "Y": 1771868.405, "Nom Commun": "SAINT-LOUIS" }, "geometry": { "type": "Point", "coordinates": [ -16.5048423, 16.0212394 ] } }
+]
+}

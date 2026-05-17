@@ -1,0 +1,14 @@
+{
+"type": "FeatureCollection",
+"name": "marché-permanent",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "ID": "1", "Nom": "FRIPERI", "Nom Commun": "SAINT-LOUIS", "X": 340020.345, "Y": 1772086.089 }, "geometry": { "type": "Point", "coordinates": [ -16.4952831, 16.0232736 ] } },
+{ "type": "Feature", "properties": { "ID": "2", "Nom": "marche bou bess", "Nom Commun": "SAINT-LOUIS", "X": 339674.547, "Y": 1772090.763 }, "geometry": { "type": "Point", "coordinates": [ -16.4985147, 16.0232933 ] } },
+{ "type": "Feature", "properties": { "ID": "3", "Nom": null, "Nom Commun": "SAINT-LOUIS", "X": 337772.723, "Y": 1750941.38 }, "geometry": { "type": "Point", "coordinates": [ -16.5148518, 15.8320353 ] } },
+{ "type": "Feature", "properties": { "ID": "4", "Nom": "Marché Sor", "Nom Commun": "SAINT-LOUIS", "X": 339801.727, "Y": 1772299.903 }, "geometry": { "type": "Point", "coordinates": [ -16.497340379581317, 16.025191647506613 ] } },
+{ "type": "Feature", "properties": { "ID": "5", "Nom": "Marché Gare", "Nom Commun": "SAINT-LOUIS", "X": 339752.096, "Y": 1772209.007 }, "geometry": { "type": "Point", "coordinates": [ -16.497798018998623, 16.024366957181424 ] } },
+{ "type": "Feature", "properties": { "ID": "6", "Nom": "Marché Ndar", "Nom Commun": "SAINT-LOUIS", "X": 338688.669, "Y": 1772527.421 }, "geometry": { "type": "Point", "coordinates": [ -16.50781898088211, 16.027266654808866 ] } },
+{ "type": "Feature", "properties": { "ID": "7", "Nom": "Marché Pikine", "Nom Commun": "SAINT-LOUIS", "X": 340058.243, "Y": 1770685.243 }, "geometry": { "type": "Point", "coordinates": [ -16.494834715398099, 16.01061619971048 ] } }
+]
+}

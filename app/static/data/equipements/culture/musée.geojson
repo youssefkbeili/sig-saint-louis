@@ -1,0 +1,11 @@
+{
+"type": "FeatureCollection",
+"name": "musée",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "ID": "1", "Type": "Musée", "Nom": "Musée de l'Aéropostale Jean Mermoz", "Nom Commun": "SAINT-LOUIS", "X": 339097.455, "Y": 1772377.656 }, "geometry": { "type": "Point", "coordinates": [ -16.5039267, 16.0258483 ] } },
+{ "type": "Feature", "properties": { "ID": "2", "Type": "Musée", "Nom": "Musée de la Photographie", "Nom Commun": "SAINT-LOUIS", "X": 338951.439, "Y": 1772161.647 }, "geometry": { "type": "Point", "coordinates": [ -16.5052765, 16.0238866 ] } },
+{ "type": "Feature", "properties": { "ID": "3", "Type": "Musée", "Nom": "IFAN", "Nom Commun": "SAINT-LOUIS", "X": 338903.755, "Y": 1771610.574 }, "geometry": { "type": "Point", "coordinates": [ -16.505684717225289, 16.018903285922917 ] } },
+{ "type": "Feature", "properties": { "ID": "4", "Type": "Musée", "Nom": "Musée CRDS ex IFAN", "Nom Commun": "SAINT-LOUIS", "X": 338933.504, "Y": 1771600.082 }, "geometry": { "type": "Point", "coordinates": [ -16.505406029018097, 16.018810419212354 ] } }
+]
+}

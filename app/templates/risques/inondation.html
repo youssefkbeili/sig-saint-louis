@@ -1,0 +1,47 @@
+{% extends "risques/base_risk.html" %}
+{% block risk_description %}
+<div class="prose">
+    <p class="text-gray-600 leading-relaxed">
+        Saint-Louis fait face à des risques d'inondation majeurs.
+        L'étude identifie <strong>4 niveaux de risque</strong> basés sur la profondeur de submersion :
+    </p>
+    <div class="mt-4 space-y-2">
+        <div class="flex items-center gap-2">
+            <span class="w-4 h-4 rounded" style="background:#8B0000"></span>
+            <span class="text-sm"><strong>IC1</strong> — Très fort (&gt; 2 m)</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="w-4 h-4 rounded" style="background:#e74c3c"></span>
+            <span class="text-sm"><strong>IC2</strong> — Fort (1 – 2 m)</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="w-4 h-4 rounded" style="background:#e67e22"></span>
+            <span class="text-sm"><strong>IC3</strong> — Moyen (0.5 – 1 m)</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="w-4 h-4 rounded" style="background:#f1c40f"></span>
+            <span class="text-sm"><strong>IC4</strong> — Faible (&lt; 0.5 m)</span>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block risk_layers %}
+fetch('/static/data/risques/risque-inondation.geojson')
+    .then(r => r.ok ? r.json() : null)
+    .then(data => {
+        if (data) {
+            L.geoJSON(data, {
+                style: function(feature) {
+                    const level = (feature.properties?.gridcode || feature.properties?.GRIDCODE || feature.properties?.Code || '').toString();
+                    const colors = { '1': '#8B0000', '2': '#e74c3c', '3': '#e67e22', '4': '#f1c40f' };
+                    return { color: colors[level] || '#e74c3c', weight: 1, fillColor: colors[level] || '#e74c3c', fillOpacity: 0.5 };
+                },
+                onEachFeature: (f, l) => {
+                    const props = f.properties || {};
+                    l.bindPopup(`<strong>Risque inondation</strong><br>Niveau : ${props.gridcode || props.Code || 'N/A'}`);
+                }
+            }).addTo(map);
+        }
+    }).catch(() => {});
+{% endblock %}
