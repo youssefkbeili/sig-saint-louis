@@ -8,9 +8,9 @@ templates = Jinja2Templates(directory=Path(__file__).resolve().parent.parent / "
 
 STATS = [
     {"value": 3, "label": "Communes"},
-    {"value": 10, "label": "Thèmes d'analyse"},
-    {"value": "50+", "label": "Quartiers"},
-    {"value": "150+", "label": "Couches SIG"},
+    {"value": "350 000+", "label": "Habitants (RGPH 2023)"},
+    {"value": 78, "label": "Couches cartographiques"},
+    {"value": 9, "label": "Thèmes d'analyse"},
 ]
 
 

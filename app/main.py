@@ -7,7 +7,7 @@ import logging
 import time
 import os
 
-from app.routers import home, diagnostic, risques, equipements, carte
+from app.routers import home, diagnostic, risques, equipements, carte, communes
 
 BASE_DIR = Path(__file__).resolve().parent
 
@@ -71,6 +71,11 @@ async def log_requests(request: Request, call_next):
 # ── Startup / shutdown events ──
 @app.on_event("startup")
 async def on_startup():
+    # Clear log files on restart (fresh logs each session)
+    if _log_ok and not _is_vercel:
+        for handler in (_bh, _fh):
+            handler.stream.seek(0)
+            handler.stream.truncate(0)
     backend_logger.info("═" * 60)
     backend_logger.info("SERVER STARTED — SIG Saint-Louis v1.0.0")
     backend_logger.info("Static dir : %s", BASE_DIR / "static")
@@ -109,4 +114,5 @@ app.include_router(home.router)
 app.include_router(diagnostic.router, prefix="/diagnostic", tags=["diagnostic"])
 app.include_router(risques.router, prefix="/risques", tags=["risques"])
 app.include_router(equipements.router, prefix="/equipements", tags=["equipements"])
+app.include_router(communes.router, prefix="/communes", tags=["communes"])
 app.include_router(carte.router, prefix="/carte", tags=["carte"])

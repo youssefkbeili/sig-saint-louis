@@ -116,7 +116,7 @@ SECTIONS = {
         "subtitle": "Évolution de la tache urbaine 2017 – 2024",
         "image": "/static/img/cartes/evolution-urbaine.jpg",
         "image_alt": "Carte d'évolution de la tache urbaine 2017-2024",
-        "content": "Entre 2017 et 2024, l'agglomération de Saint-Louis a connu une croissance urbaine significative. Trois empreintes urbaines (2017, 2020, 2024) permettent de visualiser cette expansion et de la comparer aux lotissements planifiés.",
+        "content": "Entre 2017 et 2024, l'agglomération de Saint-Louis a connu une croissance urbaine significative, mise en évidence par photo-interprétation d'images Sentinel-2. Trois empreintes urbaines (2017, 2020, 2024) permettent de visualiser cette expansion et de la comparer aux lotissements planifiés. La pression démographique se traduit par une augmentation continue des besoins en logements et infrastructures.",
         "messages": [
             "3 périodes d'observation : 2017, 2020, 2024",
             "Expansion principalement vers Gandon et les zones périurbaines",
@@ -140,7 +140,7 @@ SECTIONS = {
         "title": "Zones exposées aux risques",
         "subtitle": "Inondation, vulnérabilité et érosion côtière",
         "image": None,
-        "content": "Saint-Louis fait face à des risques naturels majeurs : inondations liées à la topographie basse, vulnérabilité des populations urbaines, et érosion côtière menaçant la Langue de Barbarie. L'étude identifie 4 niveaux de risque d'inondation et 1 058 zones de vulnérabilité.",
+        "content": "Saint-Louis fait face à des risques naturels majeurs : inondations liées à la topographie basse et au fonctionnement hydraulique du territoire, vulnérabilité des populations urbaines, érosion côtière menaçant la Langue de Barbarie, et intrusion saline. Les zones les plus exposées se situent sur l'île de Saint-Louis et dans la partie côtière de Gandon et Ndiébène Gandiole, où se concentrent les infrastructures essentielles.",
         "messages": [
             "147 zones de risque d'inondation cartographiées",
             "1 058 zones de vulnérabilité identifiées",
@@ -178,6 +178,7 @@ SECTIONS = {
             {"file": "transport/route-construction.geojson", "name": "Routes en construction", "color": "#e74c3c", "type": "line"},
             {"file": "transport/piste.geojson", "name": "Pistes", "color": "#d4a574", "type": "line"},
             {"file": "transport/chemin-fer.geojson", "name": "Chemin de fer", "color": "#2c3e50", "type": "line"},
+            {"file": "transport/route-acces.geojson", "name": "Routes d'accès", "color": "#16a085", "type": "line"},
         ],
         "stats": [
             {"value": "7", "label": "Types de voies", "icon": "road"},
@@ -192,21 +193,22 @@ SECTIONS = {
         "subtitle": "Quartiers et données démographiques",
         "image": "/static/img/cartes/population.jpg",
         "image_alt": "Carte de répartition de la population de Saint-Louis",
-        "content": "La population de l'agglomération se répartit de manière inégale entre les 3 communes. Saint-Louis concentre la majorité de la population urbaine, tandis que Gandon et Ndiébène Gandiol restent plus ruraux. 33 quartiers ont été délimités et leur population estimée.",
+        "content": "La population de l'agglomération regroupe plus de 350 000 habitants en 2023 (RGPH-5), caractérisée par une croissance soutenue entre 2% et 4% par an et une structure démographique très jeune. Saint-Louis concentre environ 72% de la population totale, confirmant son rôle de pôle urbain central, tandis que Gandon et Ndiébène Gandiole présentent des profils ruraux et périurbains en forte mutation.",
         "messages": [
-            "33 quartiers délimités avec données de population",
-            "Saint-Louis concentre la majorité des habitants",
-            "Gandon en forte croissance démographique",
+            "350 000+ habitants recensés en 2023 (RGPH-5)",
+            "Saint-Louis concentre 72% de la population totale",
+            "Croissance démographique entre 2% et 4% par an",
+            "Projections démographiques à l'horizon 2050 disponibles",
         ],
         "layers": [
             {"file": "population/quartiers-polygones.geojson", "name": "Quartiers", "color": "#3498db"},
             {"file": "population/population-quartiers.geojson", "name": "Points de population", "color": "#e74c3c", "type": "point"},
         ],
         "stats": [
-            {"value": "33", "label": "Quartiers délimités", "icon": "map"},
-            {"value": "3", "label": "Communes étudiées", "icon": "building"},
-            {"value": "Forte", "label": "Croissance Gandon", "icon": "arrow-up"},
-            {"value": "Inégale", "label": "Répartition spatiale", "icon": "chart"},
+            {"value": "350 000+", "label": "Habitants (RGPH 2023)", "icon": "users"},
+            {"value": "72%", "label": "Population à Saint-Louis", "icon": "building"},
+            {"value": "2-4%", "label": "Croissance annuelle", "icon": "arrow-up"},
+            {"value": "2050", "label": "Horizon de projection", "icon": "clock"},
         ],
     },
     "equipements": {

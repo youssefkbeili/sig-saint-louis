@@ -35,8 +35,11 @@ LAYER_GROUPS = {
     "transport": {
         "label": "Transport",
         "layers": {
-            "route-nationale": {"label": "Route nationale", "color": "#e74c3c", "type": "line"},
+            "route-acces": {"label": "Routes d'accès", "color": "#e74c3c", "type": "line"},
             "route-locale": {"label": "Route locale", "color": "#f39c12", "type": "line"},
+            "route-tertiaire": {"label": "Route tertiaire", "color": "#95a5a6", "type": "line"},
+            "route-residentielle": {"label": "Route résidentielle", "color": "#bdc3c7", "type": "line"},
+            "route-construction": {"label": "Route en construction", "color": "#e67e22", "type": "line"},
             "piste": {"label": "Piste", "color": "#d4a574", "type": "line"},
             "chemin-fer": {"label": "Chemin de fer", "color": "#2c3e50", "type": "line"},
         },

@@ -199,6 +199,10 @@
         fetch('/static/data/' + cfg.file)
             .then(r => r.json())
             .then(geojson => {
+                // Filter out features with null/invalid geometries
+                if (geojson.features) {
+                    geojson.features = geojson.features.filter(f => f.geometry && f.geometry.coordinates);
+                }
                 let layer;
                 const t = cfg.type || 'polygon';
                 if (t === 'point') {

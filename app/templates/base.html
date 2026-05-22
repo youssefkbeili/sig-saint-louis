@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{{ page_title | default('') }}{% endblock %} — SIG Saint-Louis</title>
-    <meta name="description" content="Diagnostic territorial de l'agglomération de Saint-Louis du Sénégal — Programme SEREP">
+    <meta name="description" content="Diagnostic territorial de l'agglomération de Saint-Louis du Sénégal — Programme SERRP — ADM">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -28,6 +28,9 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/static/css/style.css">
 
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
     {% block head_extra %}{% endblock %}
 </head>
 <body class="min-h-screen flex flex-col bg-gray-50 text-gray-800">
@@ -47,6 +50,7 @@
                     <a href="/" class="nav-link" data-path="/">Accueil</a>
                     <a href="/projet" class="nav-link" data-path="/projet">Le projet</a>
                     <a href="/diagnostic" class="nav-link" data-path="/diagnostic">Diagnostic</a>
+                    <a href="/communes/" class="nav-link" data-path="/communes">Communes</a>
                     <a href="/carte/" class="nav-link bg-accent-500 !text-white rounded-md hover:!bg-accent-600 flex items-center gap-1" data-path="/carte">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"/></svg>
                         Carte
@@ -66,6 +70,7 @@
             <a href="/" class="mobile-link" data-path="/">Accueil</a>
             <a href="/projet" class="mobile-link" data-path="/projet">Le projet</a>
             <a href="/diagnostic" class="mobile-link" data-path="/diagnostic">Diagnostic</a>
+            <a href="/communes/" class="mobile-link" data-path="/communes">Communes</a>
             <a href="/carte/" class="mobile-link" data-path="/carte" style="color:#f59e0b;font-weight:700">Carte interactive</a>
             <a href="/ressources" class="mobile-link" data-path="/ressources">Ressources</a>
         </div>
@@ -83,7 +88,7 @@
                 <div>
                     <h3 class="font-bold text-lg mb-3">SIG Saint-Louis</h3>
                     <p class="text-primary-200 text-sm">Diagnostic territorial de l'agglomération de Saint-Louis du Sénégal</p>
-                    <p class="text-primary-300 text-xs mt-2">Programme SEREP — Plans Intercommunaux d'Urbanisme</p>
+                    <p class="text-primary-300 text-xs mt-2">Programme SERRP — Élaboration de trois plans communal et intercommunal d'urbanisme (PCU/PCUI)</p>
                 </div>
                 <div>
                     <h3 class="font-bold text-lg mb-3">Partenaires</h3>
@@ -103,7 +108,7 @@
                 </div>
             </div>
             <div class="border-t border-primary-700 mt-6 pt-4 text-center text-primary-300 text-xs">
-                &copy; 2026 Programme SEREP — Plans Intercommunaux d'Urbanisme
+                &copy; 2026 ADM — Agence de Développement Municipal — Programme SERRP
             </div>
         </div>
     </footer>
@@ -115,7 +120,7 @@
     </div>
 
     <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="anonymous"></script>
 
     <!-- Mobile menu toggle + Lightbox -->
     <script>

@@ -144,6 +144,11 @@
 
             const geojsonData = layerCache[layerId];
 
+            // Filter out features with null/invalid geometries
+            if (geojsonData.features) {
+                geojsonData.features = geojsonData.features.filter(f => f.geometry && f.geometry.coordinates);
+            }
+
             // Style based on geometry type
             const style = {
                 color: color,

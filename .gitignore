@@ -6,3 +6,5 @@ logs/
 *.log
 .vercel/
 scripts/
+.prompts/
+test_import.py
