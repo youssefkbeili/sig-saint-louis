@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-12">
+    <nav class="text-sm text-gray-400 mb-6">
+        <a href="/" class="hover:text-primary-600">Accueil</a>
+        <span class="mx-2">›</span>
+        <a href="/communes/" class="hover:text-primary-600">Communes</a>
+        <span class="mx-2">›</span>
+        <a href="/communes/{{ commune.slug }}" class="hover:text-primary-600">{{ commune.name }}</a>
+        <span class="mx-2">›</span>
+        <span class="text-gray-700">SVD</span>
+    </nav>
+
+    <div class="flex gap-2 mb-8">
+        <a href="/communes/{{ commune.slug }}/diagnostic" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200">Diagnostic</a>
+        <a href="/communes/{{ commune.slug }}/svd" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-primary-700 text-white">SVD</a>
+        <a href="/communes/{{ commune.slug }}/pcu" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200">PCU / PCUI</a>
+    </div>
+
+    <h1 class="text-3xl font-bold mb-1">Stratégie de Ville Durable — {{ commune.name }}</h1>
+    <p class="text-gray-500 mb-8">Résumé structuré du rapport SVD officiel. Ce résumé ne remplace pas le rapport complet.</p>
+
+    <!-- Vision -->
+    <section class="bg-white rounded-xl shadow-sm border p-6 md:p-8 mb-6">
+        <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Vision territoriale</h2>
+        <blockquote class="text-xl md:text-2xl font-semibold text-primary-900 leading-snug border-l-4 border-primary-500 pl-4 mb-3">
+            « {{ svd.vision.text }} »
+        </blockquote>
+        {% if svd.vision.note %}
+        <p class="text-sm text-gray-500">{{ svd.vision.note }}</p>
+        {% endif %}
+    </section>
+
+    <!-- Principes directeurs (shared) -->
+    <section class="bg-primary-50 border border-primary-100 rounded-xl p-6 md:p-8 mb-6">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-bold text-primary-900">Principes directeurs</h2>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-100 text-blue-800">Vision intercommunale</span>
+        </div>
+        <p class="text-xs text-gray-500 mb-4">Ces principes sont communs à l'agglomération (Saint-Louis, Gandon, Ndiébène Gandiole) et ne sont pas propres à {{ commune.name }} seule.</p>
+        <div class="grid md:grid-cols-2 gap-4">
+            {% for p in principes %}
+            <div class="bg-white rounded-lg p-4 border border-primary-100">
+                <h3 class="font-semibold text-sm text-primary-800 mb-1">{{ loop.index }}. {{ p.titre }}</h3>
+                <p class="text-sm text-gray-600">{{ p.resume }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        <p class="text-xs text-gray-500 mt-4 italic">{{ principes_note }}</p>
+    </section>
+
+    <!-- Axes stratégiques (shared) -->
+    <section class="mb-6">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-bold">Axes stratégiques</h2>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-100 text-blue-800">Vision intercommunale</span>
+        </div>
+        <p class="text-xs text-gray-500 mb-4">Les 7 axes structurent la stratégie à l'échelle de toute l'agglomération, y compris {{ commune.name }}.</p>
+        <div class="grid md:grid-cols-2 gap-4">
+            {% for axe in axes %}
+            <div class="bg-white rounded-xl shadow-sm border p-5">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="w-7 h-7 rounded-full bg-primary-700 text-white text-xs font-bold flex items-center justify-center flex-shrink-0">{{ axe.numero }}</span>
+                    <h3 class="font-bold text-sm">{{ axe.titre }}</h3>
+                </div>
+                <p class="text-sm text-gray-600">{{ axe.resume }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Programmes de développement (commune-specific) -->
+    <section class="mb-6">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-bold">Programmes de développement</h2>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-green-100 text-green-800">Spécifique à {{ commune.name }}</span>
+        </div>
+        <div class="space-y-4">
+            {% for cat_key, cat_label in category_labels.items() %}
+            {% set prog = svd.programmes[cat_key] %}
+            <details class="bg-white rounded-xl shadow-sm border p-5" {% if loop.first %}open{% endif %}>
+                <summary class="cursor-pointer font-bold text-primary-800 flex items-center justify-between">
+                    <span>{{ cat_label }}</span>
+                    <span class="text-xs text-gray-400 font-normal">{{ prog.titre_source }}</span>
+                </summary>
+                <div class="mt-3 text-sm text-gray-600 leading-relaxed">
+                    <p>{{ prog.resume }}</p>
+                    {% if prog.leviers %}
+                    <ul class="mt-3 space-y-1">
+                        {% for lev in prog.leviers %}
+                        <li class="flex items-start gap-2">
+                            <svg class="w-4 h-4 mt-0.5 text-primary-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
+                            <span>{{ lev }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                    {% if prog.titre_source_note %}
+                    <p class="mt-3 text-xs text-amber-700 italic">ℹ️ {{ prog.titre_source_note }}</p>
+                    {% endif %}
+                </div>
+            </details>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Document download -->
+    <section class="bg-gray-50 border rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>
+            <h2 class="font-bold text-gray-800">Rapport complet</h2>
+            <p class="text-sm text-gray-500">Ce résumé est une synthèse numérique. Le rapport officiel reste la référence complète.</p>
+        </div>
+        <a href="{{ svd_pdf_url }}" download class="inline-flex items-center gap-2 bg-primary-700 hover:bg-primary-800 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition whitespace-nowrap">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+            Consulter le rapport complet
+        </a>
+    </section>
+</div>
+{% endblock %}

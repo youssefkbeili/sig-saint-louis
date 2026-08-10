@@ -18,13 +18,29 @@
     </nav>
 
     <!-- Header -->
-    <div class="mb-8">
+    <div class="mb-6">
         <h1 class="text-3xl font-bold mb-2">{{ commune.name }}</h1>
         <div class="flex flex-wrap gap-3 text-sm">
             <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-medium">{{ commune.population }} habitants</span>
             <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full font-medium">{{ commune.superficie }}</span>
             <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full font-medium">{{ commune.densite }}</span>
         </div>
+    </div>
+
+    <!-- Main navigation: Diagnostic / SVD / PCU-PCUI -->
+    <div class="grid md:grid-cols-3 gap-4 mb-10">
+        <a href="/communes/{{ commune.slug }}/diagnostic" class="bg-primary-700 hover:bg-primary-800 text-white rounded-xl p-6 transition shadow-sm">
+            <h2 class="text-lg font-bold mb-1">I. Diagnostic</h2>
+            <p class="text-primary-100 text-sm">Milieu physique, démographie, urbanisme, habitat, économie, enjeux</p>
+        </a>
+        <a href="/communes/{{ commune.slug }}/svd" class="bg-white hover:bg-gray-50 border rounded-xl p-6 transition shadow-sm">
+            <h2 class="text-lg font-bold mb-1 text-gray-700">II. SVD</h2>
+            <p class="text-gray-400 text-sm">Vision, axes stratégiques, programmes de développement</p>
+        </a>
+        <a href="/communes/{{ commune.slug }}/pcu" class="bg-white hover:bg-gray-50 border rounded-xl p-6 transition shadow-sm">
+            <h2 class="text-lg font-bold mb-1 text-gray-700">III. PCU / PCUI</h2>
+            <p class="text-gray-400 text-sm">Rapport, zonage, PIP, règlement, EES, atlas</p>
+        </a>
     </div>
 
     <!-- Description + Stats -->
@@ -55,7 +71,7 @@
         </div>
     </div>
 
-    <!-- Enjeux -->
+    <!-- Enjeux (full detail also available under Diagnostic > Enjeux et problématiques) -->
     <div class="bg-amber-50 border border-amber-200 rounded-xl p-6 mb-10">
         <h2 class="text-xl font-bold mb-4 text-amber-800">
             <svg class="w-5 h-5 inline mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/></svg>
@@ -69,14 +85,6 @@
             </li>
             {% endfor %}
         </ul>
-    </div>
-
-    <!-- Map -->
-    <div class="bg-white rounded-xl shadow-sm border overflow-hidden mb-10">
-        <div class="p-4 border-b">
-            <h2 class="text-xl font-bold">Carte — {{ commune.name }}</h2>
-        </div>
-        <div id="commune-map" class="h-[500px]"></div>
     </div>
 
     <!-- SVD Image Gallery -->
@@ -117,56 +125,4 @@
         {% endif %}
     </div>
 </div>
-{% endblock %}
-
-{% block scripts %}
-<script>
-(function() {
-    const map = L.map('commune-map').setView({{ commune.center }}, {{ commune.zoom }});
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 18,
-        attribution: '&copy; OpenStreetMap'
-    }).addTo(map);
-
-    const layers = {{ commune.layers | tojson }};
-    const layerControl = L.control.layers(null, null, {collapsed: false}).addTo(map);
-
-    layers.forEach(function(cfg) {
-        fetch('/static/data/' + cfg.file)
-            .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
-            .then(data => {
-                // Filter out features with null/invalid geometries
-                if (data.features) {
-                    data.features = data.features.filter(f => f.geometry && f.geometry.coordinates);
-                }
-                const opts = {
-                    style: function() {
-                        return cfg.type === 'line'
-                            ? {color: cfg.color, weight: 2.5, opacity: 0.8}
-                            : {fillColor: cfg.color, fillOpacity: 0.35, color: cfg.color, weight: 1};
-                    },
-                    pointToLayer: function(f, ll) {
-                        return L.circleMarker(ll, {radius: 6, fillColor: cfg.color, fillOpacity: 0.7, color: '#fff', weight: 1});
-                    },
-                    onEachFeature: function(feature, layer) {
-                        if (feature.properties) {
-                            const rows = Object.entries(feature.properties)
-                                .filter(([k,v]) => v != null && v !== '')
-                                .map(([k,v]) => '<tr><td class="font-semibold pr-2">' + k + '</td><td>' + v + '</td></tr>')
-                                .join('');
-                            if (rows) layer.bindPopup('<table class="text-xs">' + rows + '</table>');
-                        }
-                    }
-                };
-                const gl = L.geoJSON(data, opts).addTo(map);
-                layerControl.addOverlay(gl, cfg.name);
-                if (typeof FLog !== 'undefined') FLog.info('Layer loaded: ' + cfg.name + ' (' + (data.features ? data.features.length : 0) + ' features)');
-            })
-            .catch(e => {
-                console.warn('Layer error:', cfg.file, e);
-                if (typeof FLog !== 'undefined') FLog.error('Layer FAILED: ' + cfg.file + ' — ' + e.message);
-            });
-    });
-})();
-</script>
 {% endblock %}

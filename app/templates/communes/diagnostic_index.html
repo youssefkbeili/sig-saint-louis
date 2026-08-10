@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-12">
+    <nav class="text-sm text-gray-400 mb-6">
+        <a href="/" class="hover:text-primary-600">Accueil</a>
+        <span class="mx-2">›</span>
+        <a href="/communes/" class="hover:text-primary-600">Communes</a>
+        <span class="mx-2">›</span>
+        <a href="/communes/{{ commune.slug }}" class="hover:text-primary-600">{{ commune.name }}</a>
+        <span class="mx-2">›</span>
+        <span class="text-gray-700">Diagnostic</span>
+    </nav>
+
+    <h1 class="text-3xl font-bold mb-2">Diagnostic — {{ commune.name }}</h1>
+    <p class="text-gray-500 mb-10">Six thématiques du diagnostic territorial, propres à cette commune lorsque la donnée le permet.</p>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for sec_id in section_order %}
+        {% set d = sections[sec_id] %}
+        {% set badge = {
+            'COMPLETE': ('bg-green-100 text-green-800', 'Complète'),
+            'PARTIAL': ('bg-amber-100 text-amber-800', 'Partielle'),
+            'GLOBAL_CONTEXT': ('bg-blue-100 text-blue-800', 'Contexte régional'),
+            'MISSING': ('bg-gray-200 text-gray-600', 'Non disponible'),
+        } %}
+        <a href="/communes/{{ commune.slug }}/diagnostic/{{ sec_id }}" class="theme-card group">
+            <div class="flex items-start justify-between gap-2 mb-2">
+                <h3 class="text-lg font-bold group-hover:text-primary-600 transition">{{ all_section_meta[sec_id].label }}</h3>
+            </div>
+            <span class="inline-block text-xs font-semibold px-2.5 py-1 rounded-full {{ badge[d.coverage][0] }}">{{ badge[d.coverage][1] }}</span>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

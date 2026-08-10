@@ -8,3 +8,27 @@
     </p>
 </div>
 {% endblock %}
+
+{% block risk_layers %}
+fetch('/static/data/risques/vulnerabilite.geojson')
+    .then(r => r.ok ? r.json() : null)
+    .then(data => {
+        if (data) {
+            if (data.features) {
+                data.features = data.features.filter(f => f.geometry && f.geometry.coordinates);
+            }
+            L.geoJSON(data, {
+                style: { color: '#e67e22', weight: 1, fillColor: '#e67e22', fillOpacity: 0.45 },
+                onEachFeature: (f, l) => {
+                    const p = f.properties || {};
+                    const keys = Object.keys(p).filter(k => p[k] != null && p[k] !== '');
+                    if (keys.length) {
+                        let h = '<div class="text-xs max-h-48 overflow-y-auto">';
+                        keys.slice(0, 10).forEach(k => h += '<p><strong>' + k + ':</strong> ' + p[k] + '</p>');
+                        l.bindPopup(h + '</div>', { maxWidth: 280 });
+                    }
+                }
+            }).addTo(map);
+        }
+    }).catch(() => {});
+{% endblock %}

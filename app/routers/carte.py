@@ -27,9 +27,9 @@ LAYER_GROUPS = {
     "evolution": {
         "label": "Évolution urbaine",
         "layers": {
-            "empreinte-2017": {"label": "Empreinte 2017", "color": "#8B4513", "type": "polygon"},
-            "empreinte-2020": {"label": "Empreinte 2020", "color": "#e67e22", "type": "polygon"},
-            "empreinte-2024": {"label": "Empreinte 2024", "color": "#e91e63", "type": "polygon"},
+            "empreinte-2017": {"label": "Empreinte 2017", "color": "#93c5fd", "type": "polygon", "fillOpacity": 1},
+            "empreinte-2020": {"label": "Empreinte 2020", "color": "#2563eb", "type": "polygon", "fillOpacity": 1},
+            "empreinte-2024": {"label": "Empreinte 2024", "color": "#1e3a5f", "type": "polygon", "fillOpacity": 1},
         },
     },
     "transport": {

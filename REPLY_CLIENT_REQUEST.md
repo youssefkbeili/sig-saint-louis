@@ -1,0 +1,208 @@
+# Demande de compléments — Site SIG Saint-Louis
+
+Note à l'attention de l'ADM / COMETE International
+
+---
+
+## 1. État d'avancement
+
+Nous vous remercions pour l'ensemble des documents et données transmis. Voici où en est le site à ce jour :
+
+- Le **Diagnostic** a été réorganisé par commune (Saint-Louis, Gandon, Ndiébène Gandiol), avec des cartes et des données propres à chaque territoire.
+- Le contenu de la **SVD** (vision, principes directeurs, axes stratégiques, programmes de développement) a été intégré à partir des trois rapports SVD que vous nous avez transmis.
+- L'ensemble des couches SIG que vous nous avez fournies et qui étaient exploitables ont été intégrées (occupation du sol, topographie, peuplement, zones de conservation, activités économiques, énergie, etc.).
+- La section **PCU/PCUI** a été préparée avec la structure attendue (rapport de présentation, zonage, PIP, règlement, EES, atlas). Sa finalisation dépend cependant de documents complémentaires que nous n'avons pas encore reçus — détaillés ci-dessous.
+
+L'objet de cette note est de lister précisément ce qu'il nous reste à recevoir ou à faire confirmer afin de finaliser le site.
+
+---
+
+## 2. Données et documents nécessaires
+
+### A. PCU/PCUI — Rapport de présentation
+
+Nous aurions besoin du rapport de présentation officiel du PCU/PCUI (version finale ou dernière version validée), pour :
+- Saint-Louis
+- Gandon
+- Ndiébène Gandiol
+
+Si ce rapport est unique et intercommunal plutôt que réalisé par commune, merci de nous le préciser.
+
+Formats acceptés : PDF ou DOCX.
+
+### B. Zonage PCU/PCUI
+
+Nous aurions besoin des données de zonage officiel et validé, avec si possible :
+- les fichiers de zonage (shapefile, GeoPackage ou GeoJSON) ;
+- la nomenclature des zones ;
+- la légende / symbologie associée, si elle existe ;
+- la définition de chaque code de zone ;
+- la commune ou le périmètre concerné ;
+- le système de projection utilisé.
+
+Nous travaillons avec le système EPSG:32628 / WGS 84 UTM Zone 28N, qui est aussi celui que vous nous avez confirmé comme officiel. Une autre projection ne pose pas de problème si elle est correctement identifiée — nous pourrons la convertir.
+
+Point important à confirmer : la couche « Zone d'extension » actuellement disponible pour Gandon correspond-elle à une simple proposition d'orientation, ou fait-elle partie d'un zonage PCU/PCUI déjà approuvé ? Nous ne l'avons pas présentée comme un zonage officiel en l'absence de cette confirmation.
+
+### C. PIP — Programme d'Investissement Prioritaire
+
+Nous avons repéré, dans les rapports SVD, des tableaux de projets structurants classés par ordre de priorité, et nous les avons intégrés à titre provisoire dans la section PIP du site.
+
+Afin de disposer d'un PIP officiel, merci de nous transmettre le tableau réel dont vous disposez, avec les champs disponibles parmi (liste non obligatoire — merci de nous envoyer ce qui existe, même incomplet) :
+- intitulé du projet ;
+- commune ;
+- secteur ;
+- localisation ;
+- priorité ;
+- coût estimatif ;
+- calendrier ;
+- maître d'ouvrage / responsable ;
+- statut.
+
+Formats acceptés : XLSX, CSV, DOCX ou PDF.
+
+### D. Règlement d'urbanisme
+
+Merci de nous transmettre le ou les documents de règlement d'urbanisme officiels. Merci de préciser s'il s'agit :
+- d'un règlement intercommunal unique, ou
+- d'un règlement propre à chaque commune.
+
+Format préféré : PDF ou DOCX.
+
+### E. Évaluation environnementale stratégique (EES)
+
+Merci de nous transmettre la version finale/la plus récente de l'EES, ainsi que ses annexes et cartes associées si elles existent. Merci de préciser si l'EES est intercommunale ou propre à chaque commune.
+
+### F. Atlas cartographique
+
+Merci de nous transmettre l'atlas cartographique officiel du PCU/PCUI, de préférence au format PDF.
+
+Si aucun atlas consolidé n'existe à ce jour, merci de nous confirmer si vous souhaitez qu'à titre d'alternative, le site rassemble des liens vers les cartes thématiques déjà validées individuellement. Nous ne mettrons pas en place cette alternative sans votre confirmation.
+
+### G. Servitudes / contraintes réglementaires
+
+Merci de nous transmettre, si elles existent, les couches SIG officielles concernant :
+- les servitudes ;
+- les reculs et emprises réglementaires ;
+- les corridors protégés ;
+- les zones de passage / droits de passage ;
+- les restrictions liées aux zones inondables ;
+- les périmètres de protection d'infrastructures ;
+- toute autre contrainte réglementaire.
+
+Merci d'y joindre la légende et la signification de chaque classe.
+
+### H. ZAC / ZAD
+
+Merci de nous transmettre, si elles existent et font partie du PCU/PCUI approuvé, les documents ou couches SIG relatives aux ZAC (zones d'aménagement concerté) ou ZAD (zones d'aménagement différé).
+
+Pour information : les couches ZAPA/ZAPE/ZP déjà livrées ne sont pas présentées sur le site comme des ZAC/ZAD, leurs attributs ne permettant pas d'établir cette équivalence (elles correspondent en réalité à des catégories d'occupation du sol).
+
+### I. Bassins versants
+
+Cette thématique a été demandée mais aucune couche de bassins versants ne nous a été transmise à ce jour.
+- Une couche officielle de bassins versants existe-t-elle déjà ? Si oui, merci de nous la transmettre.
+- Si non, souhaitez-vous que nous la produisions à partir du MNT déjà fourni ? Nous ne le ferons pas sans votre accord préalable, ce type de traitement pouvant nécessiter des choix méthodologiques à valider avec vous.
+
+### J. Autres compléments SIG en attente
+
+Les éléments suivants restent à ce jour non résolus :
+- Données d'équipements socio-économiques pour **Gandon** (le dossier transmis pour cette commune est vide, contrairement à celui de Ndiébène Gandiol) ;
+- Population de 7 quartiers de Ndiébène Gandiol non renseignée dans le fichier transmis ;
+- Noms des localités/villages pour les 372 entités de la couche « Localités » (actuellement sans nom individuel) ;
+- Couverture énergétique pour Saint-Louis et Ndiébène Gandiol (les seules données disponibles concernent Gandon) ;
+- Couches d'activités économiques pour Saint-Louis, si elles existent ;
+- Une nouvelle exportation du fichier « Boucle de Gandiolais » : le fichier transmis semble incomplet et nécessite une nouvelle exportation ;
+- Une nouvelle exportation complète du fichier « CN_10m » (courbes de niveau), pour la même raison ;
+- Confirmation du jeu de données d'empreinte urbaine à considérer comme référence (plusieurs versions semblent coexister pour 2024/2025).
+
+---
+
+## 3. Compléments simples attendus pour le site (textes/visuels)
+
+Le titre de la page d'accueil, son texte d'introduction et le nouveau libellé remplaçant « Thèmes du diagnostic » (désormais « Thèmes des plans intercommunaux ») nous ont déjà été communiqués et sont intégrés sur le site — inutile de nous les retransmettre. Les deux nouvelles rubriques demandées (« Développement économique & énergie » et « Gouvernance et intercommunalité ») ont également été intégrées à la page d'accueil et au diagnostic.
+
+Les logos Sénégal, ADM, COMETE et RINA sont désormais tous intégrés et réordonnés dans le pied de page.
+
+Il reste à ce jour à confirmer :
+- Symbole exact à retirer de la carte des équipements ;
+- La phrase « Ajouter aussi à la rubrique urbanisation » : son sens précis ne nous permet pas encore d'identifier ce qui doit être ajouté à cette rubrique. Merci de préciser ce qui devrait y être ajouté (donnée, carte, texte ou lien).
+
+Par ailleurs, la palette de couleurs (bleu, 3 niveaux de contraste, sans transparence) a déjà été appliquée aux couches d'évolution urbaine à titre de proposition. Merci de nous confirmer si cette proposition vous convient ou si une autre teinte est souhaitée.
+
+---
+
+## 4. Fonctionnalités SIG avancées
+
+Vous avez mentionné le souhait de disposer de fonctionnalités proches de celles d'ArcGIS/QGIS. Avant de développer quoi que ce soit dans ce sens, merci de bien vouloir indiquer, pour chacune des fonctions suivantes, si elle est :
+
+**Nécessaire** / **Optionnelle** / **Non requise**
+
+| Fonctionnalité | Nécessaire | Optionnelle | Non requise |
+|---|---|---|---|
+| Recherche d'un quartier / d'une zone | | | |
+| Consultation des attributs d'une couche | | | |
+| Sélection/activation de couches | | | |
+| Zone tampon (buffer) | | | |
+| Analyse de zones de servitude | | | |
+| Intersection spatiale entre couches | | | |
+| Export de données sélectionnées | | | |
+| Téléchargement des couches SIG | | | |
+| Outils de dessin / édition | | | |
+
+À titre indicatif, les fonctions de recherche, de consultation et de sélection de couches reposent sur une technologie simple déjà utilisée sur le site. Les fonctions d'analyse spatiale avancée (buffer, intersection, servitudes) impliquent en revanche des choix techniques plus lourds, qu'il est préférable de cadrer précisément avec vous avant de les entreprendre.
+
+---
+
+## 5. Priorisation
+
+Afin d'organiser la suite des travaux, merci de classer les chantiers suivants par ordre de priorité :
+
+1. Finalisation du contenu PCU/PCUI
+2. Complément des couches SIG manquantes
+3. Fonctionnalités SIG avancées
+4. Bilinguisme français/wolof
+5. Optimisation mobile / application web progressive (PWA)
+6. Tableau de bord statistique
+
+---
+
+## 6. Tableau récapitulatif
+
+| Élément | Statut actuel | Donnée demandée | Priorité |
+|---|---|---|---|
+| Diagnostic par commune | Intégré | — | — |
+| SVD (vision, axes, programmes) | Intégré | — | — |
+| Occupation du sol 2020, MNT, topographie | Intégré | — | — |
+| Peuplement (quartiers, localités) | Intégré (partiel pour Ndiébène Gandiol) | Noms des localités, population de 7 quartiers | À confirmer |
+| Énergie / activités économiques | Partiel (Gandon et Ndiébène Gandiol uniquement) | Données pour Saint-Louis ; couverture énergétique élargie | À confirmer |
+| Rapport de présentation PCU/PCUI | En attente | Document officiel (3 communes) | À confirmer |
+| Zonage PCU/PCUI | Partiel (Gandon uniquement, non approuvé) | Zonage officiel validé + confirmation du statut de la couche Gandon | À confirmer |
+| PIP | Partiel (issu des tableaux SVD) | Tableau PIP officiel | À confirmer |
+| Règlement d'urbanisme | En attente | Document officiel | À confirmer |
+| EES | En attente | Rapport officiel | À confirmer |
+| Atlas cartographique | En attente | Document officiel ou confirmation d'une alternative | À confirmer |
+| Servitudes / contraintes | En attente | Couches SIG officielles | À confirmer |
+| ZAC / ZAD | En attente | Documents/couches officiels si applicable | À confirmer |
+| Bassins versants | En attente | Couche officielle ou accord pour dérivation du MNT | À confirmer |
+| Textes du site (titre, introduction, libellé, nouvelles rubriques) | Reçus, intégrés | — | — |
+| Logos partenaires (Sénégal, ADM, COMETE, RINA) | Reçus, intégrés | — | — |
+| Visuel du site (symbole équipements) | En attente | Précision du symbole à retirer | À confirmer |
+| Rubrique urbanisation (« Ajouter aussi à la rubrique urbanisation ») | Sens à préciser | Préciser ce qui doit être ajouté | À confirmer |
+| Fonctionnalités SIG avancées | Non commencé | Confirmation du périmètre requis | À confirmer |
+
+---
+
+## Prochaine étape proposée
+
+Dès réception des éléments ci-dessus :
+1. Le contenu du PCU/PCUI sera complété pour les trois communes.
+2. Les couches SIG restantes seront intégrées.
+3. Les fonctionnalités avancées demandées seront développées selon le périmètre que vous aurez confirmé.
+4. Une dernière phase de validation et de livraison sera réalisée avec vous.
+
+Nous restons à votre disposition pour toute précision.
+
+---
+
+`CLIENT DATA REQUEST READY FOR REVIEW`

@@ -3,6 +3,31 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
 from pathlib import Path
 
+from app.routers.commune_diagnostic_data import (
+    COMMUNE_DIAGNOSTIC,
+    DIAGNOSTIC_SECTION_ORDER,
+    DIAGNOSTIC_SECTION_META,
+)
+from app.routers.commune_svd_data import (
+    COMMUNE_SVD,
+    VISION_INTERCOMMUNALE,
+    PRINCIPES_DIRECTEURS,
+    PRINCIPES_DIRECTEURS_NOTE,
+    AXES_STRATEGIQUES,
+    PROGRAMME_CATEGORY_LABELS,
+)
+from app.routers.commune_pcu_data import (
+    COMMUNE_PCU,
+    PCU_SECTION_ORDER,
+    PCU_SECTION_META,
+)
+
+SVD_PDF_BY_SLUG = {
+    "saint-louis": "/static/docs/SVD_Saint-Louis.pdf",
+    "gandon": "/static/docs/SVD_Gandon.pdf",
+    "gandiole": "/static/docs/SVD_Gandiole.pdf",
+}
+
 router = APIRouter()
 templates = Jinja2Templates(directory=Path(__file__).resolve().parent.parent / "templates")
 
@@ -157,4 +182,90 @@ async def commune_detail(request: Request, slug: str):
         "prev_commune": prev_commune,
         "next_commune": next_commune,
         "svd_images": svd_images[:20],  # Limit to 20 best images
+    })
+
+
+def _enjeux_section_data(commune: dict) -> dict:
+    """The 'Enjeux et problématiques' subsection reuses the existing, already-vetted
+    COMMUNES[slug]['enjeux'] list directly (no new content, no GIS layer needed) --
+    built here rather than stored in commune_diagnostic_data.py to avoid a circular
+    import (that module is imported by this one, not the other way around)."""
+    return {"coverage": "COMPLETE", "note": None, "layers": [], "enjeux": commune["enjeux"]}
+
+
+def _commune_sections(slug: str, commune: dict) -> dict:
+    sections = dict(COMMUNE_DIAGNOSTIC[slug])
+    sections["enjeux"] = _enjeux_section_data(commune)
+    return sections
+
+
+@router.get("/{slug}/diagnostic", name="commune_diagnostic_index")
+async def commune_diagnostic_index(request: Request, slug: str):
+    """Diagnostic overview for one commune: 6 subsections with coverage badges."""
+    if slug not in COMMUNES:
+        return RedirectResponse(url="/communes/", status_code=302)
+    commune = COMMUNES[slug]
+    return templates.TemplateResponse(request, "communes/diagnostic_index.html", {
+        "page_title": f"Diagnostic — {commune['name']}",
+        "commune": commune,
+        "sections": _commune_sections(slug, commune),
+        "section_order": DIAGNOSTIC_SECTION_ORDER,
+        "all_section_meta": DIAGNOSTIC_SECTION_META,
+    })
+
+
+@router.get("/{slug}/diagnostic/{section}", name="commune_diagnostic_section")
+async def commune_diagnostic_section_page(request: Request, slug: str, section: str):
+    """One Diagnostic subsection for one commune (e.g. milieu-physique, demographie...)."""
+    if slug not in COMMUNES:
+        return RedirectResponse(url="/communes/", status_code=302)
+    if section not in DIAGNOSTIC_SECTION_ORDER:
+        return RedirectResponse(url=f"/communes/{slug}/diagnostic", status_code=302)
+
+    commune = COMMUNES[slug]
+    data = _enjeux_section_data(commune) if section == "enjeux" else COMMUNE_DIAGNOSTIC[slug][section]
+    return templates.TemplateResponse(request, "communes/diagnostic_section.html", {
+        "page_title": f"{DIAGNOSTIC_SECTION_META[section]['label']} — {commune['name']}",
+        "commune": commune,
+        "data": data,
+        "active_section": section,
+        "section_order": DIAGNOSTIC_SECTION_ORDER,
+        "section_meta": DIAGNOSTIC_SECTION_META[section],
+        "all_section_meta": DIAGNOSTIC_SECTION_META,
+    })
+
+
+@router.get("/{slug}/svd", name="commune_svd")
+async def commune_svd_page(request: Request, slug: str):
+    """SVD branch — Wave 4B: real content extracted from the official SVD reports
+    (see SVD_CONTENT_BASELINE.md for full source traceability)."""
+    if slug not in COMMUNES:
+        return RedirectResponse(url="/communes/", status_code=302)
+    commune = COMMUNES[slug]
+    return templates.TemplateResponse(request, "communes/svd.html", {
+        "page_title": f"SVD — {commune['name']}",
+        "commune": commune,
+        "svd": COMMUNE_SVD[slug],
+        "principes": PRINCIPES_DIRECTEURS,
+        "principes_note": PRINCIPES_DIRECTEURS_NOTE,
+        "axes": AXES_STRATEGIQUES,
+        "category_labels": PROGRAMME_CATEGORY_LABELS,
+        "svd_pdf_url": SVD_PDF_BY_SLUG[slug],
+    })
+
+
+@router.get("/{slug}/pcu", name="commune_pcu")
+async def commune_pcu_page(request: Request, slug: str):
+    """PCU/PCUI branch — Wave 4C: only genuinely available material is shown
+    (see PCU_CONTENT_BASELINE.md for the full audit); every other of the 6
+    requested sections is honestly marked MISSING, never fabricated."""
+    if slug not in COMMUNES:
+        return RedirectResponse(url="/communes/", status_code=302)
+    commune = COMMUNES[slug]
+    return templates.TemplateResponse(request, "communes/pcu.html", {
+        "page_title": f"PCU / PCUI — {commune['name']}",
+        "commune": commune,
+        "pcu": COMMUNE_PCU[slug],
+        "section_order": PCU_SECTION_ORDER,
+        "section_meta": PCU_SECTION_META,
     })

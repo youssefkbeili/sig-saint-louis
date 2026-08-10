@@ -132,7 +132,9 @@
             return;
         }
 
-        const url = group.layers[layerId].url;
+        const layerData = group.layers[layerId];
+        const url = layerData.url;
+        const hasOpacityOverride = layerData.fillOpacity !== undefined;
 
         try {
             // Load GeoJSON (with cache)
@@ -149,13 +151,13 @@
                 geojsonData.features = geojsonData.features.filter(f => f.geometry && f.geometry.coordinates);
             }
 
-            // Style based on geometry type
+            // Style based on geometry type (or an explicit per-layer override, e.g. urbanisation empreintes)
             const style = {
                 color: color,
                 weight: type === 'line' ? 3 : 2,
-                opacity: 0.8,
+                opacity: hasOpacityOverride ? 1 : 0.8,
                 fillColor: color,
-                fillOpacity: type === 'polygon' ? 0.3 : 0,
+                fillOpacity: hasOpacityOverride ? layerData.fillOpacity : (type === 'polygon' ? 0.3 : 0),
             };
 
             // Create layer

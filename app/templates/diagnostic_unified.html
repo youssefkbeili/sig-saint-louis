@@ -67,6 +67,7 @@
             </h2>
             <img src="{{ data.image }}"
                  alt="{{ data.image_alt | default(data.title) }}"
+                 loading="lazy"
                  class="lightbox-img w-full max-h-[500px] object-contain rounded-lg border cursor-pointer hover:opacity-90 transition"
                  title="Cliquer pour agrandir">
             <p class="text-xs text-gray-400 mt-2 text-center italic">{{ data.image_alt | default(data.title) }} — Cliquer pour agrandir</p>
@@ -90,9 +91,26 @@
                         <input type="checkbox" checked
                                class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                                onchange="toggleLayer({{ loop.index0 }}, this.checked)">
+                        {% if not layer.categoryColors %}
                         <span class="w-3 h-3 rounded-sm flex-shrink-0" style="background-color: {{ layer.color }}"></span>
+                        {% endif %}
                         <span>{{ layer.name }}</span>
                     </label>
+                    {% if layer.coverage %}
+                    <!-- Coverage-transparency note: this layer does not cover the whole study zone, say so explicitly -->
+                    <div class="ml-6 mb-1 text-[11px] text-amber-700 italic">📍 {{ layer.coverage }}</div>
+                    {% endif %}
+                    {% if layer.categoryColors %}
+                    <!-- Legend for a categorized layer (one file, many classes — e.g. Occupation du sol 2020) -->
+                    <div class="ml-6 mb-2 space-y-0.5">
+                        {% for cat, color in layer.categoryColors.items() %}
+                        <div class="flex items-center gap-2 text-xs text-gray-500">
+                            <span class="w-2.5 h-2.5 rounded-sm flex-shrink-0" style="background-color: {{ color }}"></span>
+                            <span>{{ cat }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                     {% endfor %}
                 </div>
 
@@ -196,6 +214,15 @@
     const cfgs = {{ data.layers | tojson }};
 
     cfgs.forEach((cfg, i) => {
+        // Image overlay (e.g. hillshade relief) — no GeoJSON to fetch, just a georeferenced image
+        if (cfg.type === 'image') {
+            const layer = L.imageOverlay(cfg.url, cfg.bounds, { opacity: cfg.imageOpacity !== undefined ? cfg.imageOpacity : 0.6 });
+            layers[i] = layer;
+            layer.addTo(map);
+            if (typeof FLog !== 'undefined') FLog.info('Image layer loaded: ' + cfg.name);
+            return;
+        }
+
         fetch('/static/data/' + cfg.file)
             .then(r => r.json())
             .then(geojson => {
@@ -212,12 +239,12 @@
                     });
                 } else if (t === 'line') {
                     layer = L.geoJSON(geojson, {
-                        style: { color: cfg.color, weight: 2.5, opacity: 0.8 },
+                        style: (f) => lineOrPolygonStyle(f, cfg, 'line'),
                         onEachFeature: popup
                     });
                 } else {
                     layer = L.geoJSON(geojson, {
-                        style: { color: cfg.color, fillColor: cfg.color, weight: 1, fillOpacity: 0.45 },
+                        style: (f) => lineOrPolygonStyle(f, cfg, 'polygon'),
                         onEachFeature: popup
                     });
                 }
@@ -231,6 +258,20 @@
                 else console.warn('Layer error:', cfg.file, e);
             });
     });
+
+    // Shared styling for line/polygon layers, including optional per-feature categorized coloring
+    // (e.g. Occupation du sol 2020, which is one file covering 17 land-cover classes via cfg.categoryField)
+    function lineOrPolygonStyle(feature, cfg, geomKind) {
+        let color = cfg.color;
+        if (cfg.categoryColors && cfg.categoryField) {
+            const val = feature.properties ? feature.properties[cfg.categoryField] : undefined;
+            color = cfg.categoryColors[val] || cfg.color || '#7f8c8d';
+        }
+        if (geomKind === 'line') {
+            return { color: color, weight: 2.5, opacity: 0.8 };
+        }
+        return { color: color, fillColor: color, weight: 1, fillOpacity: cfg.fillOpacity !== undefined ? cfg.fillOpacity : 0.45 };
+    }
 
     function toggleLayer(i, on) {
         if (!layers[i]) return;

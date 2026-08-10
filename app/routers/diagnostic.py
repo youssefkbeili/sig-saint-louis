@@ -20,6 +20,7 @@ SECTIONS = {
             "9 formations géologiques identifiées sur le territoire",
             "Prédominance des dunes et cordons littoraux côté océan",
             "Vasières et levées deltaïques le long du fleuve Sénégal",
+            "Nouveau : 44 zones de conservation (protection naturelle et patrimoniale)",
         ],
         "layers": [
             {"file": "diagnostic/geologie/cordons-littoraux.geojson", "name": "Cordons littoraux", "color": "#f4d03f"},
@@ -30,6 +31,16 @@ SECTIONS = {
             {"file": "diagnostic/geologie/levees-sub-actuelles.geojson", "name": "Levées sub-actuelles", "color": "#2ecc71"},
             {"file": "diagnostic/geologie/terrasse-marine.geojson", "name": "Terrasse marine", "color": "#3498db"},
             {"file": "diagnostic/geologie/vasieres.geojson", "name": "Vasières", "color": "#1abc9c"},
+            {
+                "file": "conservation/zones-conservation.geojson",
+                "name": "Zones de conservation (nouvelle donnée)",
+                "color": "#2e7d32",
+                "categoryField": "categorie",
+                "categoryColors": {
+                    "Protection Naturel": "#2e7d32",
+                    "Protection Patrimoinel": "#8e44ad",
+                },
+            },
         ],
         "stats": [
             {"value": "8", "label": "Formations géologiques", "icon": "layers"},
@@ -61,16 +72,26 @@ SECTIONS = {
     "topographie": {
         "label": "Topographie",
         "title": "Le relief et les altitudes",
-        "subtitle": "Topographie — Courbes de niveau",
+        "subtitle": "Topographie — Relief (MNT), courbes de niveau",
         "image": None,
-        "content": "Le relief est globalement plat avec des altitudes très faibles (0 à 10 mètres). Cette topographie basse contribue directement à la vulnérabilité face aux inondations. Les zones les plus basses se concentrent le long du fleuve et sur l'île de Saint-Louis.",
+        "content": "Le relief est globalement plat avec des altitudes très faibles (0 à 10 mètres). Cette topographie basse contribue directement à la vulnérabilité face aux inondations. Les zones les plus basses se concentrent le long du fleuve et sur l'île de Saint-Louis. Un modèle numérique de terrain (MNT) et des courbes de niveau au pas de 5 m sont désormais disponibles en complément des courbes existantes.",
         "messages": [
             "Altitude moyenne inférieure à 5 mètres sur toute la zone",
             "Relief plat favorisant la stagnation des eaux pluviales",
-            "13 762 courbes de niveau cartographiées",
+            "13 762 courbes de niveau cartographiées (pas variable)",
+            "Nouveau : relief ombré (MNT) et courbes de niveau au pas de 5 m",
         ],
         "layers": [
             {"file": "diagnostic/topographie/courbes-niveau.geojson", "name": "Courbes de niveau", "color": "#8B4513", "type": "line"},
+            {
+                "name": "Relief ombré (MNT)",
+                "type": "image",
+                "url": "/static/img/topographie/hillshade-mnt.png",
+                "bounds": [[15.828733, -16.530742], [16.141098, -16.327712]],
+                "imageOpacity": 0.6,
+                "color": "#555555",
+            },
+            {"file": "diagnostic/topographie/courbes-niveau-5m.geojson", "name": "Courbes de niveau 5 m (nouvelle donnée)", "color": "#a0522d", "type": "line"},
         ],
         "stats": [
             {"value": "0–10 m", "label": "Altitude du territoire", "icon": "mountain"},
@@ -90,6 +111,7 @@ SECTIONS = {
             "14 catégories d'occupation du sol cartographiées",
             "L'urbain s'étend progressivement sur les espaces naturels",
             "La mangrove et les savanes occupent encore de vastes étendues",
+            "Nouvelle couche 2020 disponible : 17 classes, couvrant une zone plus large que l'agglomération",
         ],
         "layers": [
             {"file": "occupation-sol/empreinte-urbaine.geojson", "name": "Empreinte urbaine", "color": "#e74c3c"},
@@ -102,6 +124,31 @@ SECTIONS = {
             {"file": "occupation-sol/sol-nu-dunaire.geojson", "name": "Sol nu dunaire", "color": "#f0e68c"},
             {"file": "occupation-sol/sol-nu-inondable.geojson", "name": "Sol nu inondable", "color": "#87ceeb"},
             {"file": "occupation-sol/canal-irrigation.geojson", "name": "Canal d'irrigation", "color": "#2980b9", "type": "line"},
+            {
+                "file": "occupation-sol-2020/occupation-du-sol-2020.geojson",
+                "name": "Occupation du sol 2020 (nouvelle donnée)",
+                "color": "#7f8c8d",
+                "categoryField": "categorie",
+                "categoryColors": {
+                    "Mare": "#3498db",
+                    "Lac": "#2980b9",
+                    "Cours d'eau": "#1abc9c",
+                    "Plaine inondable": "#85c1e9",
+                    "Vasière": "#a9946c",
+                    "Mangrove": "#16a085",
+                    "Prairie aquatique": "#48c9b0",
+                    "Tanne": "#f7dc6f",
+                    "Steppe": "#d4a574",
+                    "Savane": "#8e44ad",
+                    "Sol nu": "#f0e68c",
+                    "Dune": "#e67e22",
+                    "Culture pluviale": "#f1c40f",
+                    "Culture irriguée": "#27ae60",
+                    "Culture maraichère": "#58d68d",
+                    "Plantation forestière": "#196f3d",
+                    "Carrière Mine Infrastructure": "#7f8c8d",
+                },
+            },
         ],
         "stats": [
             {"value": "14", "label": "Catégories de sol", "icon": "layers"},
@@ -123,9 +170,9 @@ SECTIONS = {
             "Décalage entre urbanisation réelle et lotissements planifiés",
         ],
         "layers": [
-            {"file": "evolution/empreinte-2017.geojson", "name": "Empreinte 2017", "color": "#8B4513"},
-            {"file": "evolution/empreinte-2020.geojson", "name": "Empreinte 2020", "color": "#e67e22"},
-            {"file": "evolution/empreinte-2024.geojson", "name": "Empreinte 2024", "color": "#e91e63"},
+            {"file": "evolution/empreinte-2017.geojson", "name": "Empreinte 2017", "color": "#93c5fd", "fillOpacity": 1},
+            {"file": "evolution/empreinte-2020.geojson", "name": "Empreinte 2020", "color": "#2563eb", "fillOpacity": 1},
+            {"file": "evolution/empreinte-2024.geojson", "name": "Empreinte 2024", "color": "#1e3a5f", "fillOpacity": 1},
             {"file": "evolution/lotissements.geojson", "name": "Lotissements planifiés", "color": "#3498db"},
         ],
         "stats": [
@@ -187,6 +234,28 @@ SECTIONS = {
             {"value": "9 km", "label": "Chemin de fer", "icon": "train"},
         ],
     },
+    "peuplement": {
+        "label": "Peuplement",
+        "title": "Peuplement — quartiers et localités",
+        "subtitle": "Structure spatiale de l'habitat : quartiers et localités/villages",
+        "image": None,
+        "content": "Cette carte présente la structure spatiale du peuplement de l'agglomération : quartiers urbains et localités/villages. Elle décrit où les populations sont implantées, avant le détail démographique présenté dans le thème « Population ». La couverture réelle de chaque couche est indiquée : certaines données ne couvrent pas encore les 3 communes.",
+        "messages": [
+            "Quartiers de Saint-Louis (33), Gandon (33) et Ndiébène Gandiol (26) avec nom et population par quartier",
+            "372 localités/villages recensés sur une zone plus large que l'agglomération — sans nom individuel disponible",
+            "Les noms de villages de la couche « Localités » ne sont pas disponibles dans la donnée source — non inventés ici",
+        ],
+        "layers": [
+            {"file": "population/quartiers-polygones.geojson", "name": "Quartiers — Saint-Louis", "color": "#3498db", "coverage": "Couverture : Saint-Louis uniquement"},
+            {"file": "peuplement/quartiers-gandon.geojson", "name": "Quartiers — Gandon", "color": "#16a34a", "type": "point", "coverage": "Couverture : Gandon uniquement"},
+            {"file": "peuplement/quartiers-gandiol.geojson", "name": "Quartiers — Ndiébène Gandiol", "color": "#d97706", "type": "point", "coverage": "Couverture : Ndiébène Gandiol uniquement"},
+            {"file": "peuplement/localites.geojson", "name": "Localités / villages (sans nom, nouvelle donnée)", "color": "#7f8c8d", "coverage": "Couverture : zone régionale plus large que l'agglomération — noms de villages non disponibles"},
+        ],
+        "stats": [
+            {"value": "33+33+26", "label": "Quartiers nommés (SL / Gandon / Gandiol)", "icon": "map"},
+            {"value": "372", "label": "Localités/villages (footprints, sans nom)", "icon": "layers"},
+        ],
+    },
     "population": {
         "label": "Population",
         "title": "Répartition de la population",
@@ -239,12 +308,51 @@ SECTIONS = {
             {"value": "10+", "label": "Terrains de sport", "icon": "sport"},
         ],
     },
+    "economie_energie": {
+        "label": "Économie & Énergie",
+        "title": "Développement économique & énergie",
+        "subtitle": "Activités économiques diversifiées, transition énergétique et corridors structurants",
+        "image": None,
+        "content": "Ce thème présente les activités économiques du territoire ainsi que les enjeux de transition énergétique de l'agglomération de Saint-Louis. Les données actuellement disponibles ne couvrent pas encore les 3 communes de façon égale : la couverture réelle de chaque couche est indiquée sous son nom, et aucune donnée de Gandon n'a été dupliquée vers les autres communes.",
+        "messages": [
+            "Activités économiques diversifiées",
+            "Transition énergétique",
+            "Couverture actuelle : Gandon (économie + énergie) et Ndiébène Gandiol (économie) — Saint-Louis non couvert par ces nouvelles données",
+        ],
+        "layers": [
+            {"file": "economie/economie-gandon.geojson", "name": "Zones et projets économiques — Gandon", "color": "#f39c12", "coverage": "Couverture : Gandon uniquement"},
+            {"file": "economie/economie-gandiol.geojson", "name": "Projets économiques, agricoles & équipements — Ndiébène Gandiol", "color": "#e67e22", "coverage": "Couverture : Ndiébène Gandiol uniquement"},
+            {"file": "economie/usine-zircon-gandiol.geojson", "name": "Usine d'exploitation du Zircon (CEN_HMC) — Ndiébène Gandiol", "color": "#8B4513", "type": "point", "coverage": "Couverture : Ndiébène Gandiol uniquement (site unique)"},
+            {"file": "energie/energie-gandon.geojson", "name": "Infrastructures énergétiques — Gandon (centrale à gaz, poste Senelec)", "color": "#d35400", "type": "point", "coverage": "Couverture : Gandon uniquement"},
+            {"file": "energie/gazoduc-gandon.geojson", "name": "Corridor énergétique — Tracé Gazoduc RGS (Gandon)", "color": "#c0392b", "type": "line", "coverage": "Couverture : Gandon uniquement"},
+            {"file": "economie/future-autoroute.geojson", "name": "Corridor structurant — Future autoroute (projeté)", "color": "#34495e", "coverage": "Couverture : tracé projeté, emprise partielle disponible"},
+        ],
+        "stats": [
+            {"value": "4", "label": "Zones/projets économiques — Gandon", "icon": "building"},
+            {"value": "14", "label": "Projets économiques/équipements — Gandiol", "icon": "building"},
+            {"value": "2", "label": "Infrastructures énergétiques — Gandon", "icon": "layers"},
+            {"value": "2", "label": "Corridors structurants identifiés", "icon": "road"},
+        ],
+    },
+    "gouvernance": {
+        "label": "Gouvernance",
+        "title": "Gouvernance et intercommunalité",
+        "subtitle": "Coopération entre les communes de l'agglomération",
+        "image": None,
+        "content": "Ce thème présente les enjeux de gouvernance et de coopération intercommunale entre les communes de Saint-Louis, Gandon et Ndiébène Gandiol.",
+        "messages": [
+            "Coopération entre les communes de Saint-Louis, Gandon et Ndiébène Gandiol",
+        ],
+        "layers": [],
+        "stats": [],
+    },
 }
 
 # Order of sections for navigation
 SECTION_ORDER = [
     "geologie", "pedologie", "topographie", "occupation",
-    "urbanisation", "risques", "transport", "population", "equipements",
+    "urbanisation", "risques", "transport", "peuplement", "population", "equipements",
+    "economie_energie", "gouvernance",
 ]
 
 

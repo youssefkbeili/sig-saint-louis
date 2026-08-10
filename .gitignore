@@ -8,3 +8,7 @@ logs/
 scripts/
 .prompts/
 test_import.py
+app.pid
+.pytest_cache/
+.claude/
+reply client/

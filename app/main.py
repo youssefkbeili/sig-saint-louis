@@ -1,8 +1,9 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.gzip import GZipMiddleware
 from pathlib import Path
+import json
 import logging
 import time
 import os
@@ -93,13 +94,26 @@ async def on_shutdown():
 
 
 # ── Frontend log endpoint ──
+_VALID_LOG_LEVELS = {"info", "warning", "error"}
+_MAX_LOG_FIELD_LEN = 500
+
+
 @app.post("/api/log")
 async def frontend_log(request: Request):
-    body = await request.json()
-    level = body.get("level", "info").upper()
-    message = body.get("message", "")
-    page = body.get("page", "")
-    log_fn = getattr(frontend_logger, level.lower(), frontend_logger.info)
+    try:
+        body = await request.json()
+        if not isinstance(body, dict):
+            raise ValueError("payload must be a JSON object")
+    except (json.JSONDecodeError, ValueError):
+        raise HTTPException(status_code=400, detail="Invalid JSON payload")
+
+    level = str(body.get("level", "info")).lower()
+    if level not in _VALID_LOG_LEVELS:
+        level = "info"
+    message = str(body.get("message", ""))[:_MAX_LOG_FIELD_LEN]
+    page = str(body.get("page", ""))[:_MAX_LOG_FIELD_LEN]
+
+    log_fn = getattr(frontend_logger, level, frontend_logger.info)
     log_fn("[%s] %s", page, message)
     return {"ok": True}
 
