@@ -116,6 +116,28 @@ Les éléments suivants restent à ce jour non résolus :
 - Une nouvelle exportation complète du fichier « CN_10m » (courbes de niveau), pour la même raison ;
 - Confirmation du jeu de données d'empreinte urbaine à considérer comme référence (plusieurs versions semblent coexister pour 2024/2025).
 
+### K. Carte interactive — remarques reçues
+
+Vos remarques sur la carte interactive ont bien été prises en compte : dégradé rouge pour l'évolution urbaine (2017 au premier plan, 2020 intermédiaire, 2024 en arrière-plan), ajout des rubriques Occupation du sol, Relief et Équipements, et ajout de filtres pour les cartes de risque d'inondation (par Catégorie) et de vulnérabilité (par Indice). Ces éléments sont intégrés sur `/carte/` — voir `CLIENT_INTERACTIVE_MAP_REMARKS_REPORT.md` pour le détail technique complet.
+
+Certaines couches demandées peuvent être produites directement à partir des données déjà transmises. C'est notamment le cas de plusieurs produits liés au relief (ombrage, pente, classes d'altitude, courbes de niveau et, sous réserve de validation méthodologique, bassins versants à partir du MNT). Ces éléments ne nécessitent donc pas nécessairement un nouveau fichier de votre part.
+
+En revanche, les informations ayant une valeur officielle, réglementaire ou attributaire qui n'est pas présente dans les données disponibles ne seront pas reconstituées. Elles devront être transmises ou confirmées par vos soins — notamment : les équipements manquants de Gandon, les noms de localités, les populations manquantes, le zonage réglementaire, les servitudes et les documents PCU/PCUI.
+
+**Déjà disponible / intégré sur la carte interactive :**
+- Occupation du sol 2020 (17 catégories, style et légende par catégorie) ;
+- Relief ombré et courbes de niveau 5 m (dérivés du MNT que vous avez transmis) ;
+- Équipements (santé, éducation, culture, économie/tourisme, sport) — jeu de données intercommunal existant, non structuré de façon fiable par commune à ce jour ;
+- Risque d'inondation et Vulnérabilité, désormais avec filtres interactifs (Catégorie / Indice).
+
+**Produit à partir des données existantes, sous réserve de validation méthodologique si nécessaire :**
+- Pente et classes d'altitude (à partir du MNT) — pas encore produites, réalisables sur demande ;
+- Bassins versants (à partir du MNT) — voir point I ci-dessus, ne sera pas produit sans votre accord préalable.
+
+**Données toujours nécessaires de la part du client pour la carte interactive :**
+- Jeu de données équipements dédié à Gandon (dossier transmis actuellement vide) ;
+- Confirmation du jeu de données d'empreinte urbaine faisant référence pour 2024/2025 (voir point J).
+
 ---
 
 ## 3. Compléments simples attendus pour le site (textes/visuels)
@@ -175,6 +197,7 @@ Afin d'organiser la suite des travaux, merci de classer les chantiers suivants p
 | SVD (vision, axes, programmes) | Intégré | — | — |
 | Occupation du sol 2020, MNT, topographie | Intégré | — | — |
 | Peuplement (quartiers, localités) | Intégré (partiel pour Ndiébène Gandiol) | Noms des localités, population de 7 quartiers | À confirmer |
+| Carte interactive — remarques (palette rouge, rubriques, filtres) | Intégré | Jeu de données équipements pour Gandon | — |
 | Énergie / activités économiques | Partiel (Gandon et Ndiébène Gandiol uniquement) | Données pour Saint-Louis ; couverture énergétique élargie | À confirmer |
 | Rapport de présentation PCU/PCUI | En attente | Document officiel (3 communes) | À confirmer |
 | Zonage PCU/PCUI | Partiel (Gandon uniquement, non approuvé) | Zonage officiel validé + confirmation du statut de la couche Gandon | À confirmer |

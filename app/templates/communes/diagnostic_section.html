@@ -165,9 +165,17 @@
         layer.bindPopup(h + '</div>', { maxWidth: 280 });
     }
 
+    // Deterministic stacking for layers that declare a pane (e.g. évolution urbaine).
+    cfgs.forEach(cfg => {
+        if (cfg.pane && !map.getPane(cfg.pane)) {
+            map.createPane(cfg.pane);
+            map.getPane(cfg.pane).style.zIndex = cfg.paneZIndex || 400;
+        }
+    });
+
     cfgs.forEach((cfg, i) => {
         if (cfg.type === 'image') {
-            const layer = L.imageOverlay(cfg.url, cfg.bounds, { opacity: cfg.imageOpacity !== undefined ? cfg.imageOpacity : 0.6 });
+            const layer = L.imageOverlay(cfg.url, cfg.bounds, { pane: cfg.pane || undefined, opacity: cfg.imageOpacity !== undefined ? cfg.imageOpacity : 0.6 });
             layers[i] = layer;
             layer.addTo(map);
             return;
@@ -182,13 +190,14 @@
                 const t = cfg.type || 'polygon';
                 if (t === 'point') {
                     layer = L.geoJSON(geojson, {
-                        pointToLayer: (f, ll) => L.circleMarker(ll, { radius: 6, fillColor: cfg.color, color: '#fff', weight: 1.5, fillOpacity: 0.85 }),
+                        pane: cfg.pane || undefined,
+                        pointToLayer: (f, ll) => L.circleMarker(ll, { pane: cfg.pane || undefined, radius: 6, fillColor: cfg.color, color: '#fff', weight: 1.5, fillOpacity: 0.85 }),
                         onEachFeature: popup
                     });
                 } else if (t === 'line') {
-                    layer = L.geoJSON(geojson, { style: (f) => lineOrPolygonStyle(f, cfg, 'line'), onEachFeature: popup });
+                    layer = L.geoJSON(geojson, { pane: cfg.pane || undefined, style: (f) => lineOrPolygonStyle(f, cfg, 'line'), onEachFeature: popup });
                 } else {
-                    layer = L.geoJSON(geojson, { style: (f) => lineOrPolygonStyle(f, cfg, 'polygon'), onEachFeature: popup });
+                    layer = L.geoJSON(geojson, { pane: cfg.pane || undefined, style: (f) => lineOrPolygonStyle(f, cfg, 'polygon'), onEachFeature: popup });
                 }
                 layers[i] = layer;
                 layer.addTo(map);

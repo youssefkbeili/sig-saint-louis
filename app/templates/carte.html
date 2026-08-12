@@ -40,9 +40,35 @@
             {% for layer_id, layer in group.layers.items() %}
             <label class="flex items-center gap-2 text-sm cursor-pointer py-1 hover:bg-gray-50 px-1 rounded">
                 <input type="checkbox" class="layer-toggle" data-layer="{{ layer_id }}" data-group="{{ group_id }}" data-color="{{ layer.color }}" data-type="{{ layer.type }}" onchange="toggleLayer(this)">
+                {% if not layer.categoryColors %}
                 <span class="w-3 h-3 rounded-sm flex-shrink-0" style="background-color: {{ layer.color }}"></span>
+                {% endif %}
                 {{ layer.label }}
             </label>
+            {% if layer.coverage %}
+            <div class="ml-6 mb-1 text-[11px] text-amber-700 italic">📍 {{ layer.coverage }}</div>
+            {% endif %}
+            {% if layer.categoryColors %}
+            <div class="ml-6 mb-2 space-y-0.5">
+                {% for cat, color in layer.categoryColors.items() %}
+                <div class="flex items-center gap-2 text-xs text-gray-500">
+                    <span class="w-2.5 h-2.5 rounded-sm flex-shrink-0" style="background-color: {{ color }}"></span>
+                    <span>{{ cat }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% if layer.filter %}
+            <div class="ml-6 mb-2">
+                <label class="text-[11px] text-gray-500 block mb-0.5">Filtrer par {{ layer.filter.uiLabel }} :</label>
+                <select class="text-xs border rounded px-1.5 py-1 w-full" onchange="applyFilter('{{ layer_id }}', this.value)">
+                    <option value="">Tous</option>
+                    {% for opt in layer.filter.options %}
+                    <option value="{{ opt }}">{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
             {% endfor %}
         </div>
         {% endfor %}
@@ -78,6 +104,18 @@
         zoomControl: true,
     });
 
+    // Deterministic stacking for layers that declare a pane (e.g. évolution urbaine:
+    // 2017 must always render above 2020, which must always render above 2024,
+    // regardless of toggle order, zoom, or async fetch timing).
+    Object.values(availableLayers).forEach(group => {
+        Object.values(group.layers).forEach(layer => {
+            if (layer.pane && !map.getPane(layer.pane)) {
+                map.createPane(layer.pane);
+                map.getPane(layer.pane).style.zIndex = layer.paneZIndex || 400;
+            }
+        });
+    });
+
     // Basemaps
     const basemaps = {
         osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -104,18 +142,99 @@
         currentBasemap.addTo(map);
     }
 
-    // Active GeoJSON layers
+    // Active GeoJSON layers, cached raw data (never mutated), and current filter selection
     const activeLayers = {};
     const layerCache = {};
+    const filterState = {};
+
+    function styleForFeature(feature, layerData, color) {
+        if (layerData.categoryColors && layerData.categoryField) {
+            const val = feature.properties ? feature.properties[layerData.categoryField] : undefined;
+            color = layerData.categoryColors[val] || layerData.color || '#7f8c8d';
+        }
+        const hasOpacityOverride = layerData.fillOpacity !== undefined;
+        return {
+            color: color,
+            weight: layerData.type === 'line' ? 3 : 2,
+            opacity: hasOpacityOverride ? 1 : 0.8,
+            fillColor: color,
+            fillOpacity: hasOpacityOverride ? layerData.fillOpacity : (layerData.type === 'polygon' || !layerData.type ? 0.3 : 0),
+        };
+    }
+
+    function popupFor(feature, layer) {
+        if (!feature.properties) return;
+        let popup = '<div class="text-sm max-h-48 overflow-y-auto">';
+        for (const [key, value] of Object.entries(feature.properties)) {
+            if (value !== null && value !== undefined && value !== '' && key !== 'FID' && key !== 'OBJECTID') {
+                popup += `<p><strong>${key}:</strong> ${value}</p>`;
+            }
+        }
+        popup += '</div>';
+        layer.bindPopup(popup);
+    }
+
+    // Build (or rebuild) the Leaflet layer for layerId from the cached GeoJSON, applying
+    // the current filter selection. Always removes any previous instance first, so a
+    // filter change never leaves a duplicate/stale layer on the map.
+    function renderLayer(layerId, layerData) {
+        if (activeLayers[layerId]) {
+            map.removeLayer(activeLayers[layerId]);
+            delete activeLayers[layerId];
+        }
+
+        const cached = layerCache[layerId];
+        if (!cached) return;
+
+        let features = cached.features || [];
+        const filterCfg = layerData.filter;
+        const selected = filterState[layerId];
+        if (filterCfg && selected) {
+            features = features.filter(f => {
+                const raw = f.properties ? f.properties[filterCfg.field] : undefined;
+                return filterCfg.numeric ? String(raw) === String(selected) : raw === selected;
+            });
+        }
+
+        const geojsonData = { type: 'FeatureCollection', features: features };
+        const color = layerData.color;
+
+        const layer = L.geoJSON(geojsonData, {
+            pane: layerData.pane || undefined,
+            style: (feature) => styleForFeature(feature, layerData, color),
+            pointToLayer: function(feature, latlng) {
+                return L.circleMarker(latlng, {
+                    pane: layerData.pane || undefined,
+                    radius: 6,
+                    fillColor: color,
+                    color: '#fff',
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.8,
+                });
+            },
+            onEachFeature: popupFor,
+        });
+
+        layer.addTo(map);
+        activeLayers[layerId] = layer;
+        updateLegend();
+    }
+
+    function applyFilter(layerId, value) {
+        filterState[layerId] = value;
+        const checkbox = document.querySelector(`[data-layer="${layerId}"]`);
+        if (!checkbox || !checkbox.checked) return; // remembered for when the layer is next activated
+        const groupId = checkbox.dataset.group;
+        const layerData = availableLayers[groupId] && availableLayers[groupId].layers[layerId];
+        if (layerData) renderLayer(layerId, layerData);
+    }
 
     async function toggleLayer(checkbox) {
         const layerId = checkbox.dataset.layer;
         const groupId = checkbox.dataset.group;
-        const color = checkbox.dataset.color;
-        const type = checkbox.dataset.type;
 
         if (!checkbox.checked) {
-            // Remove layer
             if (activeLayers[layerId]) {
                 map.removeLayer(activeLayers[layerId]);
                 delete activeLayers[layerId];
@@ -124,73 +243,38 @@
             return;
         }
 
-        // Check if data is available from server
         const group = availableLayers[groupId];
         if (!group || !group.layers[layerId]) {
             checkbox.checked = false;
-            showNotification(`Couche "${layerId}" : données GeoJSON non disponibles. Lancez le script de conversion.`, 'warning');
+            showNotification(`Couche "${layerId}" : données non disponibles.`, 'warning');
             return;
         }
 
         const layerData = group.layers[layerId];
-        const url = layerData.url;
-        const hasOpacityOverride = layerData.fillOpacity !== undefined;
 
-        try {
-            // Load GeoJSON (with cache)
-            if (!layerCache[layerId]) {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                layerCache[layerId] = await response.json();
-            }
-
-            const geojsonData = layerCache[layerId];
-
-            // Filter out features with null/invalid geometries
-            if (geojsonData.features) {
-                geojsonData.features = geojsonData.features.filter(f => f.geometry && f.geometry.coordinates);
-            }
-
-            // Style based on geometry type (or an explicit per-layer override, e.g. urbanisation empreintes)
-            const style = {
-                color: color,
-                weight: type === 'line' ? 3 : 2,
-                opacity: hasOpacityOverride ? 1 : 0.8,
-                fillColor: color,
-                fillOpacity: hasOpacityOverride ? layerData.fillOpacity : (type === 'polygon' ? 0.3 : 0),
-            };
-
-            // Create layer
-            const layer = L.geoJSON(geojsonData, {
-                style: style,
-                pointToLayer: function(feature, latlng) {
-                    return L.circleMarker(latlng, {
-                        radius: 6,
-                        fillColor: color,
-                        color: '#fff',
-                        weight: 2,
-                        opacity: 1,
-                        fillOpacity: 0.8,
-                    });
-                },
-                onEachFeature: function(feature, layer) {
-                    if (feature.properties) {
-                        let popup = '<div class="text-sm">';
-                        for (const [key, value] of Object.entries(feature.properties)) {
-                            if (value && key !== 'FID' && key !== 'OBJECTID') {
-                                popup += `<p><strong>${key}:</strong> ${value}</p>`;
-                            }
-                        }
-                        popup += '</div>';
-                        layer.bindPopup(popup);
-                    }
-                },
+        // Image overlay (e.g. relief ombré) — no GeoJSON to fetch or filter.
+        if (layerData.type === 'image') {
+            const layer = L.imageOverlay(layerData.url, layerData.bounds, {
+                pane: layerData.pane || undefined,
+                opacity: layerData.imageOpacity !== undefined ? layerData.imageOpacity : 0.6,
             });
-
             layer.addTo(map);
             activeLayers[layerId] = layer;
             updateLegend();
+            return;
+        }
 
+        try {
+            if (!layerCache[layerId]) {
+                const response = await fetch(layerData.url);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const data = await response.json();
+                if (data.features) {
+                    data.features = data.features.filter(f => f.geometry && f.geometry.coordinates);
+                }
+                layerCache[layerId] = data;
+            }
+            renderLayer(layerId, layerData);
         } catch (err) {
             checkbox.checked = false;
             showNotification(`Erreur chargement : ${err.message}`, 'error');
@@ -213,8 +297,24 @@
         keys.forEach(layerId => {
             const checkbox = document.querySelector(`[data-layer="${layerId}"]`);
             if (!checkbox) return;
+            const groupId = checkbox.dataset.group;
+            const layerData = availableLayers[groupId] && availableLayers[groupId].layers[layerId];
+            const label = layerData ? layerData.label : layerId;
+
+            if (layerData && layerData.categoryColors) {
+                itemsDiv.innerHTML += `<div class="text-xs font-semibold mt-1 mb-0.5">${label}</div>`;
+                Object.entries(layerData.categoryColors).forEach(([cat, color]) => {
+                    itemsDiv.innerHTML += `
+                        <div class="flex items-center gap-2 text-xs py-0.5 pl-2">
+                            <span class="w-3 h-3 rounded-sm flex-shrink-0" style="background:${color}"></span>
+                            ${cat}
+                        </div>
+                    `;
+                });
+                return;
+            }
+
             const color = checkbox.dataset.color;
-            const label = checkbox.parentElement.textContent.trim();
             itemsDiv.innerHTML += `
                 <div class="flex items-center gap-2 text-xs py-0.5">
                     <span class="w-3 h-3 rounded-sm flex-shrink-0" style="background:${color}"></span>

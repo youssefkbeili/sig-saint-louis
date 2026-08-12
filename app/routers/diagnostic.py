@@ -170,9 +170,9 @@ SECTIONS = {
             "Décalage entre urbanisation réelle et lotissements planifiés",
         ],
         "layers": [
-            {"file": "evolution/empreinte-2017.geojson", "name": "Empreinte 2017", "color": "#93c5fd", "fillOpacity": 1},
-            {"file": "evolution/empreinte-2020.geojson", "name": "Empreinte 2020", "color": "#2563eb", "fillOpacity": 1},
-            {"file": "evolution/empreinte-2024.geojson", "name": "Empreinte 2024", "color": "#1e3a5f", "fillOpacity": 1},
+            {"file": "evolution/empreinte-2017.geojson", "name": "Empreinte 2017", "color": "#7f1d1d", "fillOpacity": 1, "pane": "empreinte2017Pane", "paneZIndex": 403},
+            {"file": "evolution/empreinte-2020.geojson", "name": "Empreinte 2020", "color": "#dc2626", "fillOpacity": 1, "pane": "empreinte2020Pane", "paneZIndex": 402},
+            {"file": "evolution/empreinte-2024.geojson", "name": "Empreinte 2024", "color": "#fca5a5", "fillOpacity": 1, "pane": "empreinte2024Pane", "paneZIndex": 401},
             {"file": "evolution/lotissements.geojson", "name": "Lotissements planifiés", "color": "#3498db"},
         ],
         "stats": [

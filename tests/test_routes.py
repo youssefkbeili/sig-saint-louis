@@ -215,3 +215,105 @@ def test_api_log_accepts_valid_payload():
 def test_api_log_rejects_malformed_json_gracefully():
     r = client.post("/api/log", content=b"not json", headers={"Content-Type": "application/json"})
     assert r.status_code in (400, 422)
+
+
+# ---- Interactive map (/carte/) — client remarks: red évolution palette, new rubriques, filters ----
+
+def _extract_available_layers_json(html):
+    """The page also embeds base.html's unrelated Tailwind color scale, which happens to
+    reuse some of the same old blue hex codes — scope palette checks to just the layer
+    config payload so that shared site theming doesn't produce a false positive/negative."""
+    start = html.index("const availableLayers = ") + len("const availableLayers = ")
+    end = html.index(";\n", start)
+    return html[start:end]
+
+
+def test_carte_evolution_urbaine_uses_red_family_not_blue():
+    """Client remark: replace the blue gradient with a red one for évolution urbaine."""
+    r = client.get("/carte/")
+    assert r.status_code == 200
+    layers_json = _extract_available_layers_json(r.text)
+    assert "#7f1d1d" in layers_json and "#dc2626" in layers_json and "#fca5a5" in layers_json
+    assert "#93c5fd" not in layers_json and "#2563eb" not in layers_json and "#1e3a5f" not in layers_json
+
+
+def test_carte_evolution_urbaine_has_deterministic_panes():
+    """2017 must always render above 2020, above 2024 — not left to fetch/toggle order."""
+    r = client.get("/carte/")
+    assert "empreinte2017Pane" in r.text
+    assert "empreinte2020Pane" in r.text
+    assert "empreinte2024Pane" in r.text
+    assert "paneZIndex" in r.text
+
+
+def test_carte_has_new_rubriques():
+    r = client.get("/carte/")
+    assert "Occupation du sol" in r.text
+    assert "Relief" in r.text
+    assert "occupation-du-sol-2020" in r.text
+    assert "hillshade-mnt.png" in r.text
+    assert "courbes-niveau-5m" in r.text
+
+
+def test_carte_flood_filter_uses_real_field_name_and_client_values():
+    """Real source field is 'Categorie' (no accent); client-facing label stays 'Catégorie'."""
+    r = client.get("/carte/")
+    assert "applyFilter('risque-inondation'" in r.text
+    assert '"field": "Categorie"' in r.text
+    for value in ["Risque très fort", "Risque fort", "Risque moyen", "Risque faible"]:
+        assert value in r.text
+
+
+def test_carte_vulnerability_filter_uses_real_field_name_and_client_values():
+    """Real source field is 'indice' (lowercase); client-facing label stays 'Indice'."""
+    r = client.get("/carte/")
+    assert "applyFilter('vulnerabilite'" in r.text
+    assert '"field": "indice"' in r.text
+    for value in ["1", "2", "3", "4"]:
+        assert f">{value}<" in r.text
+
+
+def test_carte_equipements_group_present_for_all_sectors():
+    r = client.get("/carte/")
+    for sector in ["sante", "education", "culture", "economie", "sport"]:
+        assert f"equip-{sector}" in r.text
+
+
+def test_carte_equipements_sector_endpoint_merges_real_files():
+    r = client.get("/carte/data/equipements/sante")
+    assert r.status_code == 200
+    data = r.json()
+    assert data["type"] == "FeatureCollection"
+    assert len(data["features"]) >= 1
+
+
+def test_carte_equipements_sector_endpoint_unknown_sector_404():
+    r = client.get("/carte/data/equipements/doesnotexist")
+    assert r.status_code == 404
+
+
+def _extract_cfgs_json(html):
+    """Same rationale as _extract_available_layers_json: base.html's Tailwind color
+    scale shares hex codes with the old urbanisation palette, so scope to the payload."""
+    start = html.index("const cfgs = ") + len("const cfgs = ")
+    end = html.index(";\n", start)
+    return html[start:end]
+
+
+def test_diagnostic_urbanisation_uses_red_family_not_blue():
+    """Same red family must be applied on the global Diagnostic urbanisation theme too."""
+    r = client.get("/diagnostic?section=urbanisation")
+    assert r.status_code == 200
+    cfgs_json = _extract_cfgs_json(r.text)
+    assert "#7f1d1d" in cfgs_json and "#dc2626" in cfgs_json and "#fca5a5" in cfgs_json
+    assert "#93c5fd" not in cfgs_json and "#2563eb" not in cfgs_json
+
+
+@pytest.mark.parametrize("slug", COMMUNES)
+def test_commune_urbanisation_uses_red_family_not_blue(slug):
+    """Same red family must be applied on every commune's urbain-mobilite subsection too."""
+    r = client.get(f"/communes/{slug}/diagnostic/urbain-mobilite")
+    assert r.status_code == 200
+    cfgs_json = _extract_cfgs_json(r.text)
+    assert "#7f1d1d" in cfgs_json and "#dc2626" in cfgs_json and "#fca5a5" in cfgs_json
+    assert "#93c5fd" not in cfgs_json and "#2563eb" not in cfgs_json
