@@ -6,6 +6,47 @@ from pathlib import Path
 router = APIRouter()
 templates = Jinja2Templates(directory=Path(__file__).resolve().parent.parent / "templates")
 
+# Byte-verified against app/static/data/occupation-sol-2020/occupation-du-sol-2020.geojson's
+# "categorie" field (Phase 5 double-encoding fix + Remark 2 audit) — 17 real source classes.
+OCCSOL_2020_CATEGORY_COLORS = {
+    "Mare": "#3498db",
+    "Lac": "#2980b9",
+    "Cours d'eau": "#1abc9c",
+    "Plaine inondable": "#85c1e9",
+    "Vasière": "#a9946c",
+    "Mangrove": "#16a085",
+    "Prairie aquatique": "#48c9b0",
+    "Tanne": "#f7dc6f",
+    "Steppe": "#d4a574",
+    "Savane": "#8e44ad",
+    "Sol nu": "#f0e68c",
+    "Dune": "#e67e22",
+    "Culture pluviale": "#f1c40f",
+    "Culture irriguée": "#27ae60",
+    "Culture maraichère": "#58d68d",
+    "Plantation forestière": "#196f3d",
+    "Carrière Mine Infrastructure": "#7f8c8d",
+}
+
+# Client remark 2: expose each 2020 class as its own selectable Leaflet layer instead of
+# one combined layer with a static, non-interactive legend. All 17 share the SAME source
+# file — the frontend fetches it once and filters client-side per category (see
+# diagnostic_unified.html's fetchFile()/categoryFilter handling) — no duplicate GeoJSON.
+OCCSOL_2020_CLASS_LAYERS = [
+    {
+        "file": "occupation-sol-2020/occupation-du-sol-2020.geojson",
+        "name": category,
+        "color": color,
+        "categoryField": "categorie",
+        "categoryFilter": category,
+        "group": "occ2020",
+        "groupLabel": "Occupation du sol — 2020",
+        "defaultChecked": False,
+        "popupHeader": "Occupation du sol 2020",
+    }
+    for category, color in OCCSOL_2020_CATEGORY_COLORS.items()
+]
+
 # ── Each section = its own page with its own map, image, and dashboard ──
 
 SECTIONS = {
@@ -78,7 +119,7 @@ SECTIONS = {
         "messages": [
             "Altitude moyenne inférieure à 5 mètres sur toute la zone",
             "Relief plat favorisant la stagnation des eaux pluviales",
-            "13 762 courbes de niveau cartographiées (pas variable)",
+            "13 762 courbes de niveau cartographiées (pas de 5 m)",
             "Nouveau : relief ombré (MNT) et courbes de niveau au pas de 5 m",
         ],
         "layers": [
@@ -91,7 +132,7 @@ SECTIONS = {
                 "imageOpacity": 0.6,
                 "color": "#555555",
             },
-            {"file": "diagnostic/topographie/courbes-niveau-5m.geojson", "name": "Courbes de niveau 5 m (nouvelle donnée)", "color": "#a0522d", "type": "line"},
+            {"file": "diagnostic/topographie/courbes-niveau-5m.geojson", "name": "Courbes de niveau 5 m", "color": "#a0522d", "type": "line"},
         ],
         "stats": [
             {"value": "0–10 m", "label": "Altitude du territoire", "icon": "mountain"},
@@ -108,47 +149,23 @@ SECTIONS = {
         "image_alt": "Carte d'occupation du sol de l'agglomération de Saint-Louis",
         "content": "Le territoire présente une grande diversité d'occupations du sol : zones urbaines, cultures maraîchères et irriguées, cultures pluviales, plantations forestières, mangrove, savanes (arbustive, boisée), steppes, sols nus (dunaire, inondable), et canaux d'irrigation.",
         "messages": [
-            "14 catégories d'occupation du sol cartographiées",
+            "14 catégories d'occupation du sol cartographiées (couches existantes)",
             "L'urbain s'étend progressivement sur les espaces naturels",
             "La mangrove et les savanes occupent encore de vastes étendues",
-            "Nouvelle couche 2020 disponible : 17 classes, couvrant une zone plus large que l'agglomération",
+            "Occupation du sol 2020 : 17 classes sélectionnables séparément, couvrant une zone plus large que l'agglomération",
         ],
         "layers": [
-            {"file": "occupation-sol/empreinte-urbaine.geojson", "name": "Empreinte urbaine", "color": "#e74c3c"},
-            {"file": "occupation-sol/culture-pluviale.geojson", "name": "Culture pluviale", "color": "#f1c40f"},
-            {"file": "occupation-sol/plantation-forestiere.geojson", "name": "Plantation forestière", "color": "#27ae60"},
-            {"file": "occupation-sol/mangrove.geojson", "name": "Mangrove", "color": "#1abc9c"},
-            {"file": "occupation-sol/savane-arbustive.geojson", "name": "Savane arbustive", "color": "#8e44ad"},
-            {"file": "occupation-sol/savane-boisee.geojson", "name": "Savane boisée", "color": "#6c3483"},
-            {"file": "occupation-sol/steppe.geojson", "name": "Steppe", "color": "#d4a574"},
-            {"file": "occupation-sol/sol-nu-dunaire.geojson", "name": "Sol nu dunaire", "color": "#f0e68c"},
-            {"file": "occupation-sol/sol-nu-inondable.geojson", "name": "Sol nu inondable", "color": "#87ceeb"},
-            {"file": "occupation-sol/canal-irrigation.geojson", "name": "Canal d'irrigation", "color": "#2980b9", "type": "line"},
-            {
-                "file": "occupation-sol-2020/occupation-du-sol-2020.geojson",
-                "name": "Occupation du sol 2020 (nouvelle donnée)",
-                "color": "#7f8c8d",
-                "categoryField": "categorie",
-                "categoryColors": {
-                    "Mare": "#3498db",
-                    "Lac": "#2980b9",
-                    "Cours d'eau": "#1abc9c",
-                    "Plaine inondable": "#85c1e9",
-                    "Vasière": "#a9946c",
-                    "Mangrove": "#16a085",
-                    "Prairie aquatique": "#48c9b0",
-                    "Tanne": "#f7dc6f",
-                    "Steppe": "#d4a574",
-                    "Savane": "#8e44ad",
-                    "Sol nu": "#f0e68c",
-                    "Dune": "#e67e22",
-                    "Culture pluviale": "#f1c40f",
-                    "Culture irriguée": "#27ae60",
-                    "Culture maraichère": "#58d68d",
-                    "Plantation forestière": "#196f3d",
-                    "Carrière Mine Infrastructure": "#7f8c8d",
-                },
-            },
+            {"file": "occupation-sol/empreinte-urbaine.geojson", "name": "Empreinte urbaine", "color": "#e74c3c", "group": "existantes", "groupLabel": "Occupation du sol — couches existantes", "groupOpen": True},
+            {"file": "occupation-sol/culture-pluviale.geojson", "name": "Culture pluviale", "color": "#f1c40f", "group": "existantes"},
+            {"file": "occupation-sol/plantation-forestiere.geojson", "name": "Plantation forestière", "color": "#27ae60", "group": "existantes"},
+            {"file": "occupation-sol/mangrove.geojson", "name": "Mangrove", "color": "#1abc9c", "group": "existantes"},
+            {"file": "occupation-sol/savane-arbustive.geojson", "name": "Savane arbustive", "color": "#8e44ad", "group": "existantes"},
+            {"file": "occupation-sol/savane-boisee.geojson", "name": "Savane boisée", "color": "#6c3483", "group": "existantes"},
+            {"file": "occupation-sol/steppe.geojson", "name": "Steppe", "color": "#d4a574", "group": "existantes"},
+            {"file": "occupation-sol/sol-nu-dunaire.geojson", "name": "Sol nu dunaire", "color": "#f0e68c", "group": "existantes"},
+            {"file": "occupation-sol/sol-nu-inondable.geojson", "name": "Sol nu inondable", "color": "#87ceeb", "group": "existantes"},
+            {"file": "occupation-sol/canal-irrigation.geojson", "name": "Canal d'irrigation", "color": "#2980b9", "type": "line", "group": "existantes"},
+            *OCCSOL_2020_CLASS_LAYERS,
         ],
         "stats": [
             {"value": "14", "label": "Catégories de sol", "icon": "layers"},
@@ -170,10 +187,16 @@ SECTIONS = {
             "Décalage entre urbanisation réelle et lotissements planifiés",
         ],
         "layers": [
-            {"file": "evolution/empreinte-2017.geojson", "name": "Empreinte 2017", "color": "#7f1d1d", "fillOpacity": 1, "pane": "empreinte2017Pane", "paneZIndex": 403},
+            # Client remark 3: color intensity inverted (2017 light -> 2024 dark); the
+            # pane/paneZIndex stacking is unchanged — 2017 stays foreground, 2024 stays
+            # background. Lotissements planifiés is now black with its own pane above all
+            # three empreinte panes, so it's never hidden beneath whichever footprints
+            # happen to be toggled on (it previously had no pane at all, meaning it sat
+            # in Leaflet's default overlayPane at zIndex 400 — below every empreinte pane).
+            {"file": "evolution/empreinte-2017.geojson", "name": "Empreinte 2017", "color": "#fca5a5", "fillOpacity": 1, "pane": "empreinte2017Pane", "paneZIndex": 403},
             {"file": "evolution/empreinte-2020.geojson", "name": "Empreinte 2020", "color": "#dc2626", "fillOpacity": 1, "pane": "empreinte2020Pane", "paneZIndex": 402},
-            {"file": "evolution/empreinte-2024.geojson", "name": "Empreinte 2024", "color": "#fca5a5", "fillOpacity": 1, "pane": "empreinte2024Pane", "paneZIndex": 401},
-            {"file": "evolution/lotissements.geojson", "name": "Lotissements planifiés", "color": "#3498db"},
+            {"file": "evolution/empreinte-2024.geojson", "name": "Empreinte 2024", "color": "#7f1d1d", "fillOpacity": 1, "pane": "empreinte2024Pane", "paneZIndex": 401},
+            {"file": "evolution/lotissements.geojson", "name": "Lotissements planifiés", "color": "#000000", "pane": "lotissementsPane", "paneZIndex": 410},
         ],
         "stats": [
             {"value": "195", "label": "Zones urbaines 2017", "icon": "building"},
@@ -193,6 +216,24 @@ SECTIONS = {
             "1 058 zones de vulnérabilité identifiées",
             "3 zones d'érosion côtière sur le littoral",
             "Gor, Guet Ndar et Pikine parmi les plus vulnérables",
+        ],
+        # Client remark 4: the two official cartographic maps (client-provided print
+        # layouts), shown alongside — not instead of — the interactive GIS layers below.
+        "cartes": [
+            {
+                "title": "Carte du risque d'inondation",
+                "image": "/static/img/cartes/risque-inondation.jpg",
+                "image_alt": "Carte du risque d'inondation — hauteur de submersion pour crue centennale, agglomération de Saint-Louis",
+                "pdf": "/static/docs/Carte_Alea_Inondation_PUD.pdf",
+                "interactive_link": "/risques/inondation",
+            },
+            {
+                "title": "Carte de vulnérabilité",
+                "image": "/static/img/cartes/vulnerabilite.jpg",
+                "image_alt": "Carte de la vulnérabilité aux inondations, agglomération de Saint-Louis",
+                "pdf": "/static/docs/Carte_Vulnerabilite_PUD.pdf",
+                "interactive_link": "/risques/vulnerabilite",
+            },
         ],
         "layers": [
             {"file": "risques/risque-inondation.geojson", "name": "Risque d'inondation", "color": "#e74c3c"},
@@ -236,24 +277,24 @@ SECTIONS = {
     },
     "peuplement": {
         "label": "Peuplement",
-        "title": "Peuplement — quartiers et localités",
-        "subtitle": "Structure spatiale de l'habitat : quartiers et localités/villages",
+        "title": "Peuplement — quartiers et bâtiments",
+        "subtitle": "Structure spatiale de l'habitat : quartiers et bâtiments",
         "image": None,
-        "content": "Cette carte présente la structure spatiale du peuplement de l'agglomération : quartiers urbains et localités/villages. Elle décrit où les populations sont implantées, avant le détail démographique présenté dans le thème « Population ». La couverture réelle de chaque couche est indiquée : certaines données ne couvrent pas encore les 3 communes.",
+        "content": "Cette carte présente la structure spatiale du peuplement de l'agglomération : quartiers urbains (implantation ponctuelle) et bâtiments. Elle décrit où les populations sont implantées, avant le détail démographique présenté dans le thème « Population ». La couverture réelle de chaque couche est indiquée : certaines données ne couvrent pas encore les 3 communes.",
         "messages": [
             "Quartiers de Saint-Louis (33), Gandon (33) et Ndiébène Gandiol (26) avec nom et population par quartier",
-            "372 localités/villages recensés sur une zone plus large que l'agglomération — sans nom individuel disponible",
-            "Les noms de villages de la couche « Localités » ne sont pas disponibles dans la donnée source — non inventés ici",
+            "Quartiers de Saint-Louis désormais affichés en implantation ponctuelle (donnée client), comme Gandon et Ndiébène Gandiol",
+            "15 481 bâtiments (empreintes) cartographiés pour Saint-Louis — donnée de structure du bâti, sans lien direct avec la population ou le nombre de ménages",
         ],
         "layers": [
-            {"file": "population/quartiers-polygones.geojson", "name": "Quartiers — Saint-Louis", "color": "#3498db", "coverage": "Couverture : Saint-Louis uniquement"},
+            {"file": "peuplement/quartiers-saint-louis.geojson", "name": "Quartiers — Saint-Louis", "color": "#3498db", "type": "point", "coverage": "Couverture : Saint-Louis uniquement"},
             {"file": "peuplement/quartiers-gandon.geojson", "name": "Quartiers — Gandon", "color": "#16a34a", "type": "point", "coverage": "Couverture : Gandon uniquement"},
             {"file": "peuplement/quartiers-gandiol.geojson", "name": "Quartiers — Ndiébène Gandiol", "color": "#d97706", "type": "point", "coverage": "Couverture : Ndiébène Gandiol uniquement"},
-            {"file": "peuplement/localites.geojson", "name": "Localités / villages (sans nom, nouvelle donnée)", "color": "#7f8c8d", "coverage": "Couverture : zone régionale plus large que l'agglomération — noms de villages non disponibles"},
+            {"file": "peuplement/batiments.geojson", "name": "Bâtiments", "color": "#4a4a4a", "fillOpacity": 0.7, "defaultChecked": False, "coverage": "Couverture : Saint-Louis uniquement — empreintes bâties (donnée client « Tissu poly »), sans attribut de population ou d'usage"},
         ],
         "stats": [
             {"value": "33+33+26", "label": "Quartiers nommés (SL / Gandon / Gandiol)", "icon": "map"},
-            {"value": "372", "label": "Localités/villages (footprints, sans nom)", "icon": "layers"},
+            {"value": "15 481", "label": "Bâtiments (empreintes, Saint-Louis)", "icon": "building"},
         ],
     },
     "population": {

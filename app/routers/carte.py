@@ -74,12 +74,15 @@ LAYER_GROUPS = {
     "evolution": {
         "label": "Évolution urbaine",
         "layers": {
-            # Client remark (interactive-map): red family, 2017 = darkest/foreground,
-            # 2024 = lightest/background. Deterministic stacking via dedicated Leaflet
-            # panes (see carte.html) — do not rely on fetch/toggle order.
-            "empreinte-2017": {"label": "Empreinte 2017", "color": "#7f1d1d", "type": "polygon", "fillOpacity": 1, "pane": "empreinte2017Pane", "paneZIndex": 403},
+            # Client remark 3: color INTENSITY inverted (2017 light -> 2024 dark), but
+            # the STACKING remains unchanged — 2017 is still foreground (highest pane
+            # zIndex), 2024 still background (lowest). Do not confuse the two: only the
+            # "color" values were swapped below, the pane/paneZIndex assignments were not
+            # touched. Deterministic stacking via dedicated Leaflet panes (see carte.html)
+            # — do not rely on fetch/toggle order.
+            "empreinte-2017": {"label": "Empreinte 2017", "color": "#fca5a5", "type": "polygon", "fillOpacity": 1, "pane": "empreinte2017Pane", "paneZIndex": 403},
             "empreinte-2020": {"label": "Empreinte 2020", "color": "#dc2626", "type": "polygon", "fillOpacity": 1, "pane": "empreinte2020Pane", "paneZIndex": 402},
-            "empreinte-2024": {"label": "Empreinte 2024", "color": "#fca5a5", "type": "polygon", "fillOpacity": 1, "pane": "empreinte2024Pane", "paneZIndex": 401},
+            "empreinte-2024": {"label": "Empreinte 2024", "color": "#7f1d1d", "type": "polygon", "fillOpacity": 1, "pane": "empreinte2024Pane", "paneZIndex": 401},
         },
     },
     "transport": {
@@ -102,14 +105,20 @@ LAYER_GROUPS = {
         },
     },
     "occupation": {
-        "label": "Occupation du sol",
+        "label": "Occupation du sol — 2020",
+        "collapsible": True,
         "layers": {
-            # Reuses the validated Wave 2/Phase 5 layer as-is — no duplicate GeoJSON generated.
-            "occupation-du-sol-2020": {
-                "label": "Occupation du sol — 2020", "color": "#7f8c8d", "type": "polygon",
-                "categoryField": "categorie", "categoryColors": OCCSOL_2020_CATEGORY_COLORS,
-                "coverage": "Donnée 2020 (17 classes) — ne représente pas l'occupation du sol actuelle",
-            },
+            # Client remark 2: 17 individually-selectable classes instead of one combined
+            # layer with a static, non-interactive legend. All share the SAME validated
+            # source file (fetched once, filtered client-side — see carte.html) — no
+            # duplicate GeoJSON generated.
+            f"occ2020-{i}": {
+                "label": category, "color": color, "type": "polygon",
+                "file": "occupation-sol-2020/occupation-du-sol-2020.geojson",
+                "categoryField": "categorie", "categoryFilter": category,
+                "coverage": "Donnée 2020 — ne représente pas l'occupation du sol actuelle",
+            }
+            for i, (category, color) in enumerate(OCCSOL_2020_CATEGORY_COLORS.items())
         },
     },
     "relief": {
@@ -161,6 +170,13 @@ def _resolve_layer_url(layer_id: str, layer_info: dict):
         sector_dir = DATA_DIR / "equipements" / layer_info["sector"]
         if sector_dir.exists() and any(sector_dir.glob("*.geojson")):
             return f"/carte/data/equipements/{layer_info['sector']}"
+        return None
+
+    if "file" in layer_info:
+        # Explicit relative path — used when several layer_ids share one source file
+        # (e.g. Occupation du sol 2020's 17 individually-selectable classes).
+        if (DATA_DIR / layer_info["file"]).exists():
+            return f"/static/data/{layer_info['file']}"
         return None
 
     for subdir in DATA_DIR.rglob(f"{layer_id}.geojson"):

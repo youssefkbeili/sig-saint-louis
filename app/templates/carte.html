@@ -36,7 +36,16 @@
         <!-- Data layers by group -->
         {% for group_id, group in all_groups.items() %}
         <div class="p-3 border-b">
+            {% if group.collapsible %}
+            <details>
+                <summary class="font-semibold text-xs uppercase text-gray-400 tracking-wider mb-2 cursor-pointer select-none">{{ group.label }}</summary>
+                <div class="flex gap-3 mt-2 mb-1 ml-1">
+                    <button type="button" onclick="toggleGroup('{{ group_id }}', true)" class="text-[11px] text-primary-600 hover:underline">Tout afficher</button>
+                    <button type="button" onclick="toggleGroup('{{ group_id }}', false)" class="text-[11px] text-gray-500 hover:underline">Tout masquer</button>
+                </div>
+            {% else %}
             <h3 class="font-semibold text-xs uppercase text-gray-400 tracking-wider mb-2">{{ group.label }}</h3>
+            {% endif %}
             {% for layer_id, layer in group.layers.items() %}
             <label class="flex items-center gap-2 text-sm cursor-pointer py-1 hover:bg-gray-50 px-1 rounded">
                 <input type="checkbox" class="layer-toggle" data-layer="{{ layer_id }}" data-group="{{ group_id }}" data-color="{{ layer.color }}" data-type="{{ layer.type }}" onchange="toggleLayer(this)">
@@ -70,6 +79,7 @@
             </div>
             {% endif %}
             {% endfor %}
+            {% if group.collapsible %}</details>{% endif %}
         </div>
         {% endfor %}
 
@@ -147,6 +157,14 @@
     const layerCache = {};
     const filterState = {};
 
+    // Leaflet quirk: passing {pane: undefined} is NOT the same as omitting "pane" — it
+    // shadows the class default (L.ImageOverlay throws "Cannot read properties of
+    // undefined (reading 'appendChild')" trying to insert into a nonexistent pane).
+    // Only spread this key in when a real pane name is set.
+    function paneOpt(pane) {
+        return pane ? { pane } : {};
+    }
+
     function styleForFeature(feature, layerData, color) {
         if (layerData.categoryColors && layerData.categoryField) {
             const val = feature.properties ? feature.properties[layerData.categoryField] : undefined;
@@ -174,19 +192,44 @@
         layer.bindPopup(popup);
     }
 
+    // Several layer_ids may share the same source file (e.g. Occupation du sol 2020's
+    // 17 individually-selectable classes) — cache the PROMISE keyed by URL, not just the
+    // resolved data, so concurrent toggles (e.g. "Tout afficher") never trigger more than
+    // one network request for the same file.
+    function fetchLayerData(url) {
+        if (!layerCache[url]) {
+            layerCache[url] = fetch(url)
+                .then(r => {
+                    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                    return r.json();
+                })
+                .then(data => {
+                    if (data.features) {
+                        data.features = data.features.filter(f => f.geometry && f.geometry.coordinates);
+                    }
+                    return data;
+                });
+        }
+        return layerCache[url];
+    }
+
     // Build (or rebuild) the Leaflet layer for layerId from the cached GeoJSON, applying
-    // the current filter selection. Always removes any previous instance first, so a
-    // filter change never leaves a duplicate/stale layer on the map.
-    function renderLayer(layerId, layerData) {
+    // the current filter selection and/or category partition. Always removes any previous
+    // instance first, so a filter change never leaves a duplicate/stale layer on the map.
+    async function renderLayer(layerId, layerData) {
         if (activeLayers[layerId]) {
             map.removeLayer(activeLayers[layerId]);
             delete activeLayers[layerId];
         }
 
-        const cached = layerCache[layerId];
-        if (!cached) return;
+        const cached = await fetchLayerData(layerData.url);
 
         let features = cached.features || [];
+        // Static per-checkbox partition (e.g. this checkbox = only the "Mangrove" class
+        // of Occupation du sol 2020) — distinct from the interactive `filter` dropdown.
+        if (layerData.categoryFilter !== undefined) {
+            features = features.filter(f => (f.properties ? f.properties[layerData.categoryField] : undefined) === layerData.categoryFilter);
+        }
         const filterCfg = layerData.filter;
         const selected = filterState[layerId];
         if (filterCfg && selected) {
@@ -200,11 +243,11 @@
         const color = layerData.color;
 
         const layer = L.geoJSON(geojsonData, {
-            pane: layerData.pane || undefined,
+            ...paneOpt(layerData.pane),
             style: (feature) => styleForFeature(feature, layerData, color),
             pointToLayer: function(feature, latlng) {
                 return L.circleMarker(latlng, {
-                    pane: layerData.pane || undefined,
+                    ...paneOpt(layerData.pane),
                     radius: 6,
                     fillColor: color,
                     color: '#fff',
@@ -219,6 +262,17 @@
         layer.addTo(map);
         activeLayers[layerId] = layer;
         updateLegend();
+    }
+
+    // Toggle every checkbox belonging to a given group at once (the "Tout afficher" /
+    // "Tout masquer" controls for a collapsible group like Occupation du sol — 2020).
+    function toggleGroup(groupId, on) {
+        document.querySelectorAll(`[data-group="${groupId}"]`).forEach(cb => {
+            if (cb.type === 'checkbox' && cb.checked !== on) {
+                cb.checked = on;
+                toggleLayer(cb);
+            }
+        });
     }
 
     function applyFilter(layerId, value) {
@@ -255,7 +309,7 @@
         // Image overlay (e.g. relief ombré) — no GeoJSON to fetch or filter.
         if (layerData.type === 'image') {
             const layer = L.imageOverlay(layerData.url, layerData.bounds, {
-                pane: layerData.pane || undefined,
+                ...paneOpt(layerData.pane),
                 opacity: layerData.imageOpacity !== undefined ? layerData.imageOpacity : 0.6,
             });
             layer.addTo(map);
@@ -265,16 +319,7 @@
         }
 
         try {
-            if (!layerCache[layerId]) {
-                const response = await fetch(layerData.url);
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                const data = await response.json();
-                if (data.features) {
-                    data.features = data.features.filter(f => f.geometry && f.geometry.coordinates);
-                }
-                layerCache[layerId] = data;
-            }
-            renderLayer(layerId, layerData);
+            await renderLayer(layerId, layerData);
         } catch (err) {
             checkbox.checked = false;
             showNotification(`Erreur chargement : ${err.message}`, 'error');

@@ -173,9 +173,17 @@
         }
     });
 
+    // Leaflet quirk: passing {pane: undefined} is NOT the same as omitting "pane" — it
+    // shadows the class default (L.ImageOverlay throws trying to insert into a
+    // nonexistent pane, aborting the rest of this forEach loop). Only spread this key
+    // in when a real pane name is set.
+    function paneOpt(pane) {
+        return pane ? { pane } : {};
+    }
+
     cfgs.forEach((cfg, i) => {
         if (cfg.type === 'image') {
-            const layer = L.imageOverlay(cfg.url, cfg.bounds, { pane: cfg.pane || undefined, opacity: cfg.imageOpacity !== undefined ? cfg.imageOpacity : 0.6 });
+            const layer = L.imageOverlay(cfg.url, cfg.bounds, { ...paneOpt(cfg.pane), opacity: cfg.imageOpacity !== undefined ? cfg.imageOpacity : 0.6 });
             layers[i] = layer;
             layer.addTo(map);
             return;
@@ -190,14 +198,14 @@
                 const t = cfg.type || 'polygon';
                 if (t === 'point') {
                     layer = L.geoJSON(geojson, {
-                        pane: cfg.pane || undefined,
-                        pointToLayer: (f, ll) => L.circleMarker(ll, { pane: cfg.pane || undefined, radius: 6, fillColor: cfg.color, color: '#fff', weight: 1.5, fillOpacity: 0.85 }),
+                        ...paneOpt(cfg.pane),
+                        pointToLayer: (f, ll) => L.circleMarker(ll, { ...paneOpt(cfg.pane), radius: 6, fillColor: cfg.color, color: '#fff', weight: 1.5, fillOpacity: 0.85 }),
                         onEachFeature: popup
                     });
                 } else if (t === 'line') {
-                    layer = L.geoJSON(geojson, { pane: cfg.pane || undefined, style: (f) => lineOrPolygonStyle(f, cfg, 'line'), onEachFeature: popup });
+                    layer = L.geoJSON(geojson, { ...paneOpt(cfg.pane), style: (f) => lineOrPolygonStyle(f, cfg, 'line'), onEachFeature: popup });
                 } else {
-                    layer = L.geoJSON(geojson, { pane: cfg.pane || undefined, style: (f) => lineOrPolygonStyle(f, cfg, 'polygon'), onEachFeature: popup });
+                    layer = L.geoJSON(geojson, { ...paneOpt(cfg.pane), style: (f) => lineOrPolygonStyle(f, cfg, 'polygon'), onEachFeature: popup });
                 }
                 layers[i] = layer;
                 layer.addTo(map);

@@ -109,7 +109,6 @@ Cette thématique a été demandée mais aucune couche de bassins versants ne no
 Les éléments suivants restent à ce jour non résolus :
 - Données d'équipements socio-économiques pour **Gandon** (le dossier transmis pour cette commune est vide, contrairement à celui de Ndiébène Gandiol) ;
 - Population de 7 quartiers de Ndiébène Gandiol non renseignée dans le fichier transmis ;
-- Noms des localités/villages pour les 372 entités de la couche « Localités » (actuellement sans nom individuel) ;
 - Couverture énergétique pour Saint-Louis et Ndiébène Gandiol (les seules données disponibles concernent Gandon) ;
 - Couches d'activités économiques pour Saint-Louis, si elles existent ;
 - Une nouvelle exportation du fichier « Boucle de Gandiolais » : le fichier transmis semble incomplet et nécessite une nouvelle exportation ;
@@ -122,7 +121,7 @@ Vos remarques sur la carte interactive ont bien été prises en compte : dégrad
 
 Certaines couches demandées peuvent être produites directement à partir des données déjà transmises. C'est notamment le cas de plusieurs produits liés au relief (ombrage, pente, classes d'altitude, courbes de niveau et, sous réserve de validation méthodologique, bassins versants à partir du MNT). Ces éléments ne nécessitent donc pas nécessairement un nouveau fichier de votre part.
 
-En revanche, les informations ayant une valeur officielle, réglementaire ou attributaire qui n'est pas présente dans les données disponibles ne seront pas reconstituées. Elles devront être transmises ou confirmées par vos soins — notamment : les équipements manquants de Gandon, les noms de localités, les populations manquantes, le zonage réglementaire, les servitudes et les documents PCU/PCUI.
+En revanche, les informations ayant une valeur officielle, réglementaire ou attributaire qui n'est pas présente dans les données disponibles ne seront pas reconstituées. Elles devront être transmises ou confirmées par vos soins — notamment : les équipements manquants de Gandon, les populations manquantes, le zonage réglementaire, les servitudes et les documents PCU/PCUI.
 
 **Déjà disponible / intégré sur la carte interactive :**
 - Occupation du sol 2020 (17 catégories, style et légende par catégorie) ;
@@ -137,6 +136,64 @@ En revanche, les informations ayant une valeur officielle, réglementaire ou att
 **Données toujours nécessaires de la part du client pour la carte interactive :**
 - Jeu de données équipements dédié à Gandon (dossier transmis actuellement vide) ;
 - Confirmation du jeu de données d'empreinte urbaine faisant référence pour 2024/2025 (voir point J).
+
+### L. Carte de la Topographie — absence de données visibles à l'écran
+
+Vous nous avez signalé que la carte de la rubrique Topographie n'affichait aucune donnée visible malgré des couches cochées, et vous avez demandé pourquoi la couche « Courbes de niveau 5 m » portait la mention « (nouvelle donnée) ».
+
+Ces deux points sont désormais réglés :
+- Il s'agissait d'un problème d'affichage (bug technique), pas d'un manque de données : le relief ombré, les courbes de niveau et les courbes de niveau 5 m que vous avez déjà transmis (ou pour lesquels le relief a été calculé à partir du MNT que vous avez transmis) s'affichent maintenant correctement.
+- La mention « (nouvelle donnée) » a été retirée du libellé public de cette couche.
+
+**Aucune nouvelle donnée n'est nécessaire de votre part pour ce point.** Les données existantes étaient suffisantes ; seul l'affichage devait être corrigé.
+
+Par ailleurs, en vérifiant les deux couches de courbes de niveau, nous avons constaté qu'elles utilisent en réalité le même pas altimétrique (5 m), alors qu'elles proviennent de deux sources distinctes (l'ancienne couche historique du site et la nouvelle couche que vous avez transmise). Elles semblent donc en partie redondantes. Nous n'avons rien supprimé à ce stade ; merci de nous confirmer si vous souhaitez que nous conservions les deux couches ou que nous n'en gardions qu'une seule.
+
+Enfin, deux jeux de données que vous nous avez transmis récemment (bâti et quartiers de Saint-Louis avec population) ont été examinés : ils ne concernent pas la Topographie et seront traités dans le cadre d'une prochaine remarque (habitat/bâti et population/quartiers).
+
+### M. Occupation du sol — case « 2020 » confuse retirée
+
+Vous nous avez signalé que la case « Occupation du sol 2020 (nouvelle donnée) », avec sa légende de 17 classes non cliquables, créait de la confusion à côté des couches existantes.
+
+Plutôt que de supprimer les données 2020 (valides et déjà validées), nous avons choisi de les rendre utilisables : chacune des 17 classes est désormais une case à cocher indépendante, avec sa propre couleur, regroupée sous un intitulé dépliable « Occupation du sol — 2020 » (avec des liens « Tout afficher » / « Tout masquer »), séparé des couches existantes. La mention « (nouvelle donnée) » a été retirée. Une seule et même donnée source est utilisée (aucun fichier dupliqué), chargée une seule fois même si plusieurs classes sont affichées en même temps.
+
+**Aucune nouvelle donnée n'est nécessaire de votre part pour ce point.**
+
+Les jeux de données bâti et quartiers de Saint-Louis (voir point L) ont de nouveau été examinés pour cette remarque : ils ne contiennent aucun attribut de type occupation du sol et ne concernent donc pas cette rubrique non plus.
+
+### N. Couleurs de l'évolution urbaine — intensité inversée + lotissements en noir
+
+Vous nous avez demandé d'inverser l'intensité des couleurs de l'évolution urbaine (rouge clair pour 2017, rouge intermédiaire pour 2020, rouge foncé pour 2024) et d'afficher les lotissements planifiés en noir.
+
+C'est fait, sur toutes les pages concernées (`/carte/`, Diagnostic → Urbanisation, et les 3 communes) : Empreinte 2017 en rouge clair, Empreinte 2020 en rouge intermédiaire, Empreinte 2024 en rouge foncé, Lotissements planifiés en noir. L'ordre d'affichage des couches (2017 au premier plan, 2020 au milieu, 2024 en arrière-plan) que vous aviez demandé précédemment a été conservé à l'identique — seule l'intensité des couleurs a changé, pas l'empilement des couches.
+
+**Aucune nouvelle donnée n'est nécessaire de votre part pour ce point.**
+
+### O. Cartes officielles ajoutées à la rubrique Risques naturels
+
+Vous avez signalé que la rubrique Risques naturels ne montrait pas de carte, contrairement aux autres rubriques du diagnostic. Les deux cartes officielles que vous avez transmises (dossier « Cartographie inondation et vulnérabilité ») sont maintenant affichées dans cette rubrique, en plus des couches interactives déjà en place :
+- **Carte du risque d'inondation** (carte des aléas naturels — hauteur de submersion pour crue centennale, avec les zones d'érosion côtière également représentées sur le même document) ;
+- **Carte de vulnérabilité**.
+
+Chaque carte est affichable en grand, téléchargeable au format PDF d'origine, et reliée à la carte interactive correspondante.
+
+**RECEIVED / INTEGRATED — aucune nouvelle donnée n'est nécessaire de votre part pour ce point.**
+
+### P. Peuplement — quartiers de Saint-Louis et bâtiments (données client)
+
+Conformément à votre demande, la rubrique Peuplement a été mise à jour avec les données que vous avez transmises :
+- **Quartiers — Saint-Louis** : remplacés par votre nouvelle couche `quartier_saint_louis`, affichée en implantation ponctuelle (un point par quartier), au même format que Gandon et Ndiébène Gandiol ;
+- **Bâtiments** : la couche « Localités / villages (sans nom) » a été retirée et remplacée par votre couche `bati.shp` (15 481 empreintes bâties pour Saint-Louis).
+
+**RECEIVED / INTEGRATED — aucune nouvelle donnée n'est nécessaire de votre part pour ce point.**
+
+Par conséquent, notre demande précédente concernant les noms des 372 localités/villages est retirée : cette couche n'est plus utilisée dans la rubrique Peuplement (remplacée par les bâtiments ci-dessus) et ne bloque donc plus rien sur le site actuellement. Si vous souhaitez malgré tout que nous l'intégrions ailleurs à l'avenir, les noms resteront utiles le cas échéant.
+
+### Q. Nom affiché dans le bandeau du site
+
+Vous avez demandé de remplacer « SIG Saint-Louis », affiché en haut à gauche du site, par un intitulé reflétant mieux la portée intercommunale du projet. Le bandeau (et le pied de page) affichent désormais **« SIG WEB Interactif »**, sur toutes les pages. Le grand titre de la page d'accueil (déjà validé avec vous précédemment) n'a pas été modifié — seul ce petit intitulé d'en-tête a changé.
+
+**RECEIVED / INTEGRATED — aucune nouvelle donnée n'est nécessaire de votre part pour ce point.**
 
 ---
 
@@ -196,8 +253,14 @@ Afin d'organiser la suite des travaux, merci de classer les chantiers suivants p
 | Diagnostic par commune | Intégré | — | — |
 | SVD (vision, axes, programmes) | Intégré | — | — |
 | Occupation du sol 2020, MNT, topographie | Intégré | — | — |
-| Peuplement (quartiers, localités) | Intégré (partiel pour Ndiébène Gandiol) | Noms des localités, population de 7 quartiers | À confirmer |
+| Peuplement (quartiers, bâtiments) | Intégré (partiel pour Ndiébène Gandiol) | Population de 7 quartiers de Ndiébène Gandiol | À confirmer |
 | Carte interactive — remarques (palette rouge, rubriques, filtres) | Intégré | Jeu de données équipements pour Gandon | — |
+| Carte Topographie — affichage corrigé, libellé « nouvelle donnée » retiré | Intégré | Confirmation souhaitée : conserver les 2 couches de courbes de niveau (même pas de 5 m) ou n'en garder qu'une | Optionnelle |
+| Occupation du sol 2020 — 17 classes sélectionnables séparément, libellé « nouvelle donnée » retiré | Intégré | — | — |
+| Évolution urbaine — intensité des couleurs inversée (2017 clair → 2024 foncé), lotissements planifiés en noir | Intégré | — | — |
+| Cartes officielles Inondation + Vulnérabilité — ajoutées à la rubrique Risques naturels | Intégré | — | — |
+| Quartiers Saint-Louis (points) + Bâtiments — données client intégrées, ancienne couche Localités retirée | Intégré | — | — |
+| Bandeau du site — « SIG Saint-Louis » remplacé par « SIG WEB Interactif » | Intégré | — | — |
 | Énergie / activités économiques | Partiel (Gandon et Ndiébène Gandiol uniquement) | Données pour Saint-Louis ; couverture énergétique élargie | À confirmer |
 | Rapport de présentation PCU/PCUI | En attente | Document officiel (3 communes) | À confirmer |
 | Zonage PCU/PCUI | Partiel (Gandon uniquement, non approuvé) | Zonage officiel validé + confirmation du statut de la couche Gandon | À confirmer |

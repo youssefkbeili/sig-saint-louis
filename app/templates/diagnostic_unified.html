@@ -74,6 +74,37 @@
         </section>
         {% endif %}
 
+        <!-- Official cartographic maps (client-provided print layouts) -->
+        {% if data.cartes %}
+        <section class="bg-white rounded-xl shadow-sm border p-4">
+            <h2 class="text-lg font-bold mb-3 flex items-center gap-2">
+                <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3 4.5h18M3 4.5A1.5 1.5 0 0 1 4.5 3h15A1.5 1.5 0 0 1 21 4.5M3 4.5v15A1.5 1.5 0 0 0 4.5 21h15a1.5 1.5 0 0 0 1.5-1.5V4.5"/></svg>
+                Cartographie des risques
+            </h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                {% for carte in data.cartes %}
+                <div>
+                    <h3 class="text-sm font-bold text-gray-700 mb-2">{{ carte.title }}</h3>
+                    <img src="{{ carte.image }}"
+                         alt="{{ carte.image_alt }}"
+                         loading="lazy"
+                         class="lightbox-img w-full max-h-[400px] object-contain rounded-lg border cursor-pointer hover:opacity-90 transition"
+                         title="Cliquer pour agrandir">
+                    <p class="text-xs text-gray-400 mt-2 text-center italic">Cliquer pour agrandir</p>
+                    <div class="flex flex-wrap gap-x-4 gap-y-1 justify-center mt-2 text-sm">
+                        {% if carte.pdf %}
+                        <a href="{{ carte.pdf }}" target="_blank" rel="noopener" class="text-primary-600 hover:text-primary-800 font-medium">Télécharger le PDF</a>
+                        {% endif %}
+                        {% if carte.interactive_link %}
+                        <a href="{{ carte.interactive_link }}" class="text-primary-600 hover:text-primary-800 font-medium">Explorer la carte interactive →</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
         <!-- Interactive map with layer controls -->
         {% if data.layers %}
         <section class="bg-white rounded-xl shadow-sm border p-4">
@@ -86,22 +117,40 @@
                 <!-- Layer controls -->
                 <div class="lg:col-span-1 bg-gray-50 rounded-lg p-3 max-h-[450px] overflow-y-auto">
                     <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Couches</h3>
+                    {% set ns = namespace(open_group=None) %}
                     {% for layer in data.layers %}
-                    <label class="layer-toggle flex items-center gap-2 py-1.5 text-sm text-gray-700 hover:text-gray-900">
-                        <input type="checkbox" checked
+                        {% if layer.group and layer.group != ns.open_group %}
+                            {% if ns.open_group %}</details>{% endif %}
+                            <details class="mb-2" {{ 'open' if layer.groupOpen else '' }}>
+                                <summary class="text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer select-none">{{ layer.groupLabel or layer.group }}</summary>
+                                <div class="flex gap-3 mt-2 mb-1 ml-1">
+                                    <button type="button" onclick="toggleGroup('{{ layer.group }}', true)" class="text-[11px] text-primary-600 hover:underline">Tout afficher</button>
+                                    <button type="button" onclick="toggleGroup('{{ layer.group }}', false)" class="text-[11px] text-gray-500 hover:underline">Tout masquer</button>
+                                </div>
+                            {% set ns.open_group = layer.group %}
+                        {% elif not layer.group and ns.open_group %}
+                            </details>
+                            {% set ns.open_group = None %}
+                        {% endif %}
+                    <label class="layer-toggle flex items-center gap-2 py-1.5 text-sm text-gray-700 hover:text-gray-900{{ ' ml-2' if layer.group else '' }}">
+                        <input type="checkbox" {{ 'checked' if (layer.defaultChecked is not defined or layer.defaultChecked) else '' }}
+                               data-layer-index="{{ loop.index0 }}" data-layer-group="{{ layer.group or '' }}"
                                class="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                                onchange="toggleLayer({{ loop.index0 }}, this.checked)">
                         {% if not layer.categoryColors %}
                         <span class="w-3 h-3 rounded-sm flex-shrink-0" style="background-color: {{ layer.color }}"></span>
                         {% endif %}
                         <span>{{ layer.name }}</span>
+                        {% if layer.file %}
+                        <span class="layer-loading text-[11px] text-gray-400 italic{{ '' if (layer.defaultChecked is not defined or layer.defaultChecked) else ' hidden' }}" data-loading-for="{{ loop.index0 }}">Chargement…</span>
+                        {% endif %}
                     </label>
                     {% if layer.coverage %}
                     <!-- Coverage-transparency note: this layer does not cover the whole study zone, say so explicitly -->
                     <div class="ml-6 mb-1 text-[11px] text-amber-700 italic">📍 {{ layer.coverage }}</div>
                     {% endif %}
                     {% if layer.categoryColors %}
-                    <!-- Legend for a categorized layer (one file, many classes — e.g. Occupation du sol 2020) -->
+                    <!-- Legend for a categorized layer (one file, many classes) -->
                     <div class="ml-6 mb-2 space-y-0.5">
                         {% for cat, color in layer.categoryColors.items() %}
                         <div class="flex items-center gap-2 text-xs text-gray-500">
@@ -111,6 +160,7 @@
                         {% endfor %}
                     </div>
                     {% endif %}
+                    {% if loop.last and ns.open_group %}</details>{% endif %}
                     {% endfor %}
                 </div>
 
@@ -222,53 +272,134 @@
         }
     });
 
+    // Leaflet quirk: passing {pane: undefined} is NOT the same as omitting "pane" — it
+    // shadows the class default (L.ImageOverlay throws "Cannot read properties of
+    // undefined (reading 'appendChild')" trying to insert into a nonexistent pane, which
+    // then aborts the rest of this forEach loop since the exception is uncaught). Only
+    // spread this key in when a real pane name is set.
+    function paneOpt(pane) {
+        return pane ? { pane } : {};
+    }
+
+    // If a layer already carries known bounds (e.g. an image overlay's geo-referenced
+    // extent), fit the map to it immediately instead of waiting on whichever GeoJSON
+    // layer happens to load first — a legacy/unclipped layer at index 0 can have a much
+    // larger extent than this section's actual study area, zooming the map out past the
+    // point where the newer, more relevant layers are even visible on screen.
+    const boundsCfg = cfgs.find(c => c.type === 'image' && c.bounds);
+    if (boundsCfg) {
+        try { map.fitBounds(boundsCfg.bounds); } catch(e) {}
+    }
+
+    // Heavy GeoJSON layers (e.g. Topographie's contour lines, several MB) can take a
+    // moment to fetch — without feedback, a layer that's still loading looks identical
+    // to nothing having happened. Layers checked by default show this immediately;
+    // layers loaded lazily on first toggle (e.g. an Occupation du sol 2020 class) show
+    // it only once actually requested.
+    function showLoadingIndicator(i) {
+        const el = document.querySelector(`.layer-loading[data-loading-for="${i}"]`);
+        if (el) el.classList.remove('hidden');
+    }
+    function hideLoadingIndicator(i) {
+        const el = document.querySelector(`.layer-loading[data-loading-for="${i}"]`);
+        if (el) el.classList.add('hidden');
+    }
+
+    // Several layer configs may share the same source file (e.g. Occupation du sol
+    // 2020's 17 individually-selectable classes are all filtered client-side from one
+    // GeoJSON) — fetch each distinct file exactly once and reuse the parsed result.
+    const fileCache = {};
+    function fetchFile(file) {
+        if (!fileCache[file]) {
+            fileCache[file] = fetch('/static/data/' + file)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.features) {
+                        data.features = data.features.filter(f => f.geometry && f.geometry.coordinates);
+                    }
+                    return data;
+                });
+        }
+        return fileCache[file];
+    }
+
+    // Toggle every layer belonging to a given group at once (the "Tout afficher" /
+    // "Tout masquer" controls for a collapsible group like Occupation du sol — 2020).
+    function toggleGroup(groupName, on) {
+        document.querySelectorAll(`[data-layer-group="${groupName}"]`).forEach(cb => {
+            if (cb.checked !== on) {
+                cb.checked = on;
+                toggleLayer(parseInt(cb.dataset.layerIndex, 10), on);
+            }
+        });
+    }
+
+    // Fetch (once per file, shared across configs) + build the Leaflet layer for cfgs[i],
+    // then add it to the map. Called eagerly at load time only for layers that start
+    // checked; for anything unchecked by default (e.g. Occupation du sol 2020's classes),
+    // this instead runs lazily the first time the user actually checks that box — so an
+    // unused 2020 class never costs a network request at all.
+    function loadAndBuildLayer(i) {
+        const cfg = cfgs[i];
+        fetchFile(cfg.file)
+            .then(sharedGeojson => {
+                // A categoryFilter selects one class out of a shared multi-class file
+                // (e.g. one of Occupation du sol 2020's 17 categories) — build a NEW
+                // features array rather than mutating the cached/shared geojson, since
+                // other configs pointing at the same file need the full feature set.
+                const features = cfg.categoryFilter !== undefined
+                    ? sharedGeojson.features.filter(f => (f.properties ? f.properties[cfg.categoryField] : undefined) === cfg.categoryFilter)
+                    : sharedGeojson.features;
+                const geojson = { type: 'FeatureCollection', features };
+
+                let layer;
+                const t = cfg.type || 'polygon';
+                if (t === 'point') {
+                    layer = L.geoJSON(geojson, {
+                        ...paneOpt(cfg.pane),
+                        pointToLayer: (f, ll) => L.circleMarker(ll, { ...paneOpt(cfg.pane), radius: 6, fillColor: cfg.color, color: '#fff', weight: 1.5, fillOpacity: 0.85 }),
+                        onEachFeature: (f, l) => popup(f, l, cfg)
+                    });
+                } else if (t === 'line') {
+                    layer = L.geoJSON(geojson, {
+                        ...paneOpt(cfg.pane),
+                        style: (f) => lineOrPolygonStyle(f, cfg, 'line'),
+                        onEachFeature: (f, l) => popup(f, l, cfg)
+                    });
+                } else {
+                    layer = L.geoJSON(geojson, {
+                        ...paneOpt(cfg.pane),
+                        style: (f) => lineOrPolygonStyle(f, cfg, 'polygon'),
+                        onEachFeature: (f, l) => popup(f, l, cfg)
+                    });
+                }
+                layers[i] = layer;
+                layer.addTo(map);
+                if (i === 0 && !boundsCfg) try { map.fitBounds(layer.getBounds().pad(0.1)); } catch(e) {}
+                hideLoadingIndicator(i);
+                if (typeof FLog !== 'undefined') FLog.info('Layer loaded: ' + cfg.name + ' (' + (features.length || 0) + ' features)');
+            })
+            .catch(e => {
+                hideLoadingIndicator(i);
+                if (typeof FLog !== 'undefined') FLog.error('Layer FAILED: ' + cfg.file + ' — ' + e.message);
+                else console.warn('Layer error:', cfg.file, e);
+            });
+    }
+
     cfgs.forEach((cfg, i) => {
+        const defaultOn = cfg.defaultChecked !== false;
+        if (!defaultOn) return; // loaded lazily on first toggle instead — see loadAndBuildLayer()
+
         // Image overlay (e.g. hillshade relief) — no GeoJSON to fetch, just a georeferenced image
         if (cfg.type === 'image') {
-            const layer = L.imageOverlay(cfg.url, cfg.bounds, { pane: cfg.pane || undefined, opacity: cfg.imageOpacity !== undefined ? cfg.imageOpacity : 0.6 });
+            const layer = L.imageOverlay(cfg.url, cfg.bounds, { ...paneOpt(cfg.pane), opacity: cfg.imageOpacity !== undefined ? cfg.imageOpacity : 0.6 });
             layers[i] = layer;
             layer.addTo(map);
             if (typeof FLog !== 'undefined') FLog.info('Image layer loaded: ' + cfg.name);
             return;
         }
 
-        fetch('/static/data/' + cfg.file)
-            .then(r => r.json())
-            .then(geojson => {
-                // Filter out features with null/invalid geometries
-                if (geojson.features) {
-                    geojson.features = geojson.features.filter(f => f.geometry && f.geometry.coordinates);
-                }
-                let layer;
-                const t = cfg.type || 'polygon';
-                if (t === 'point') {
-                    layer = L.geoJSON(geojson, {
-                        pane: cfg.pane || undefined,
-                        pointToLayer: (f, ll) => L.circleMarker(ll, { pane: cfg.pane || undefined, radius: 6, fillColor: cfg.color, color: '#fff', weight: 1.5, fillOpacity: 0.85 }),
-                        onEachFeature: popup
-                    });
-                } else if (t === 'line') {
-                    layer = L.geoJSON(geojson, {
-                        pane: cfg.pane || undefined,
-                        style: (f) => lineOrPolygonStyle(f, cfg, 'line'),
-                        onEachFeature: popup
-                    });
-                } else {
-                    layer = L.geoJSON(geojson, {
-                        pane: cfg.pane || undefined,
-                        style: (f) => lineOrPolygonStyle(f, cfg, 'polygon'),
-                        onEachFeature: popup
-                    });
-                }
-                layers[i] = layer;
-                layer.addTo(map);
-                if (i === 0) try { map.fitBounds(layer.getBounds().pad(0.1)); } catch(e) {}
-                if (typeof FLog !== 'undefined') FLog.info('Layer loaded: ' + cfg.name + ' (' + (geojson.features?.length || 0) + ' features)');
-            })
-            .catch(e => {
-                if (typeof FLog !== 'undefined') FLog.error('Layer FAILED: ' + cfg.file + ' — ' + e.message);
-                else console.warn('Layer error:', cfg.file, e);
-            });
+        loadAndBuildLayer(i);
     });
 
     // Shared styling for line/polygon layers, including optional per-feature categorized coloring
@@ -286,16 +417,25 @@
     }
 
     function toggleLayer(i, on) {
-        if (!layers[i]) return;
-        on ? map.addLayer(layers[i]) : map.removeLayer(layers[i]);
+        if (!on) {
+            if (layers[i]) map.removeLayer(layers[i]);
+            return;
+        }
+        if (layers[i]) {
+            map.addLayer(layers[i]);
+        } else if (cfgs[i] && cfgs[i].type !== 'image') {
+            showLoadingIndicator(i);
+            loadAndBuildLayer(i); // first activation of a layer that started unchecked
+        }
     }
 
-    function popup(feature, layer) {
-        if (!feature.properties) return;
-        const p = feature.properties;
+    function popup(feature, layer, cfg) {
+        const p = feature.properties || {};
         const keys = Object.keys(p).filter(k => p[k] != null && p[k] !== '');
-        if (!keys.length) return;
+        const header = cfg && cfg.popupHeader;
+        if (!keys.length && !header) return;
         let h = '<div class="text-xs max-h-48 overflow-y-auto">';
+        if (header) h += '<p class="font-semibold text-gray-500 mb-1">' + header + '</p>';
         keys.slice(0, 10).forEach(k => h += '<p><strong>' + k + ':</strong> ' + p[k] + '</p>');
         if (keys.length > 10) h += '<p class="text-gray-400">... +' + (keys.length - 10) + ' champs</p>';
         layer.bindPopup(h + '</div>', { maxWidth: 280 });
